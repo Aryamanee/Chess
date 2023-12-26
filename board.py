@@ -265,6 +265,8 @@ class Board:
 
   #is_valid_move function
   def is_valid_move(self, currsquare, endsquare):
+    color = self.board[currsquare[0]][currsquare[1]].color
+
     #is endsquare same as current square? or is currentsquare empty or is endsquare same color as current square? and is the currsquare and endsquare on board
     if currsquare == endsquare:
       return False
@@ -275,21 +277,30 @@ class Board:
     if self.board[endsquare[0]][endsquare[1]] != None:
       if self.board[endsquare[0]][endsquare[1]].color == color:
         return False
-
-    color = self.board[currsquare[0]][currsquare[1]].color
     
     #runs for different types of pieces
+    #this one for rooks
     if self.board[currsquare[0]][currsquare[1]].type == "R":
-      pass
+      rook_offsets = [(1,0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0), (-1,0), (-2, 0), (-3, 0), (-4, 0), (-5, 0), (-6, 0), (-7, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7), (0, -1), (0, -2), (0, -3), (0, -4), (0, -5), (0, -6), (0, -7)]
+      # runs if the end square for the rook is somewhere a rook would go, doesn't matter if it's off the board as that has been dealt with above
+      if rook_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
+        # creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
+        board_copy = self.board.copy()
+        self.move(currsquare, endsquare, color, board_copy)
+        return self.king_safe(self.find_king(color, board_copy), color, board_copy)
+      else:
+        return False
+    #runs for Knights
     elif self.board[currsquare[0]][currsquare[1]].type == "N":
       knight_offsets = [(1,2),(2,1),(1,-2),(2,-1),(-1,2),(-2,1),(-1,-2),(-2,-1)]
+      #runs if the end square for the knight is somewhere a knight would go
       if knight_offsets.count((endsquare[0]-currsquare[0],endsquare[1]-currsquare[1])) == 1:
+        #creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
         board_copy = self.board.copy()
         self.move(currsquare, endsquare, color, board_copy)
         return self.king_safe(self.find_king(color, board_copy) ,color, board_copy)
       else:
         return False
-
     elif self.board[currsquare[0]][currsquare[1]].type == "B":
       pass
     elif self.board[currsquare[0]][currsquare[1]].type == "Q":

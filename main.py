@@ -1,5 +1,5 @@
 import board
-gameboard = board.Board(position="6k1/8/8/6n1/1N6/8/6Q1/1K6")
+gameboard = board.Board(position="1q4k1/8/8/6n1/1R6/8/6Q1/1K6")
 
 line = len(gameboard.board)
 for i in gameboard.board:
@@ -16,4 +16,4 @@ for i in gameboard.board:
   line-=1
 print("   A  B  C  D  E  F  G  H")
 print(gameboard.king_safe(gameboard.find_king(True), True))
-print(gameboard.is_valid_move(board.B4, board.C4))
+print(gameboard.is_valid_move(board.B4, board.B6))
