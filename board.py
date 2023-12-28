@@ -289,7 +289,7 @@ class Board:
       if rook_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
         # creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
         board_copy = self.board.copy()
-        self.move(currsquare, endsquare, color, board_copy)
+        self.move(currsquare, endsquare, board_copy)
         return self.king_safe(self.find_king(color, board_copy), color, board_copy)
       else:
         return False
@@ -300,7 +300,7 @@ class Board:
       if knight_offsets.count((endsquare[0]-currsquare[0],endsquare[1]-currsquare[1])) == 1:
         #creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
         board_copy = self.board.copy()
-        self.move(currsquare, endsquare, color, board_copy)
+        self.move(currsquare, endsquare, board_copy)
         return self.king_safe(self.find_king(color, board_copy) ,color, board_copy)
       else:
         return False
@@ -311,7 +311,7 @@ class Board:
       if bishop_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
         # creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
         board_copy = self.board.copy()
-        self.move(currsquare, endsquare, color, board_copy)
+        self.move(currsquare, endsquare, board_copy)
         return self.king_safe(self.find_king(color, board_copy), color, board_copy)
       else:
         return False
@@ -321,7 +321,7 @@ class Board:
       if queen_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
         # creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
         board_copy = self.board.copy()
-        self.move(currsquare, endsquare, color, board_copy)
+        self.move(currsquare, endsquare, board_copy)
         return self.king_safe(self.find_king(color, board_copy), color, board_copy)
       else:
         return False
@@ -333,7 +333,7 @@ class Board:
         if king_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
           # creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
           board_copy = self.board.copy()
-          self.move(currsquare, endsquare, color, board_copy)
+          self.move(currsquare, endsquare, board_copy)
           return self.king_safe(self.find_king(color, board_copy), color, board_copy)
         elif endsquare == G8 and currsquare == E8 and self.G8 == None and self.F8 == None:
           return self.king_safe(E8, color) and self.king_safe(F8, color) and self.king_safe(G8, color) and (not self.king_moved(color)) and (not self.rook_moved(color, H8))
@@ -347,7 +347,7 @@ class Board:
         if king_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
           # creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
           board_copy = self.board.copy()
-          self.move(currsquare, endsquare, color, board_copy)
+          self.move(currsquare, endsquare, board_copy)
           return self.king_safe(self.find_king(color, board_copy), color, board_copy)
         elif endsquare == G1 and currsquare == E1 and self.G1 == None and self.F1 == None:
           return self.king_safe(E1, color) and self.king_safe(F1, color) and self.king_safe(G1, color) and (
