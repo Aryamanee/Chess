@@ -337,7 +337,7 @@ class Board:
           return self.king_safe(self.find_king(color, board_copy), color, board_copy)
         elif endsquare == G8 and currsquare == E8 and self.G8 == None and self.F8 == None:
           return self.king_safe(E8, color) and self.king_safe(F8, color) and self.king_safe(G8, color) and (not self.king_moved(color)) and (not self.rook_moved(color, H8))
-        elif endsquare == C8 and currsquare == E8 and self.D8 == None and self.C8 == None:
+        elif endsquare == C8 and currsquare == E8 and self.D8 == None and self.C8 == None and self.B8 == None:
           return self.king_safe(E8, color) and self.king_safe(D8, color) and self.king_safe(C8, color) and (not self.king_moved(color)) and (not self.rook_moved(color, A8))
         else:
           return False
@@ -352,7 +352,7 @@ class Board:
         elif endsquare == G1 and currsquare == E1 and self.G1 == None and self.F1 == None:
           return self.king_safe(E1, color) and self.king_safe(F1, color) and self.king_safe(G1, color) and (
             not self.king_moved(color)) and (not self.rook_moved(color, H1))
-        elif endsquare == C1 and currsquare == E1 and self.C1 == None and self.D1 == None:
+        elif endsquare == C1 and currsquare == E1 and self.C1 == None and self.D1 == None and self.B1 == None:
           return self.king_safe(E1, color) and self.king_safe(D1, color) and self.king_safe(C1, color) and (
             not self.king_moved(color)) and (not self.rook_moved(color, A1))
         else:
@@ -378,7 +378,6 @@ class Board:
         self.history.append([currsquare, endsquare, piece, 0])
       else:
         self.history.append([currsquare, endsquare, piece, 1])
-
 
   #find_king function
   def find_king(self, color, board = []):
