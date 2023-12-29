@@ -359,9 +359,20 @@ class Board:
           return False
     elif self.board[currsquare[0]][currsquare[1]].type == "P":
       if color:
-        if endsquare[0] == currsquare[0]+1 and endsquare[1] == currsquare[1]:
-          pass
-        elif endsquare[0] == currsquare[0]+2 and endsquare[1] == currsquare[1] and currsquare[0] == 1:
+        if endsquare[0] == currsquare[0]+1 and endsquare[1] == currsquare[1] and self.board[endsquare[0]][endsquare[1]] == None:
+          return True
+        elif endsquare[0] == currsquare[0]+2 and endsquare[1] == currsquare[1] and currsquare[0] == 1 and self.board[endsquare[0]-1][endsquare[1]] == None and self.board[endsquare[0]][endsquare[1]] == None:
+          return True
+        elif endsquare[0] == currsquare[0]+1 and (endsquare[1] == currsquare[1]+1 or endsquare[1] == currsquare[1]-1):
+          if self.board[endsquare[0]][endsquare[1]] != None:
+            return True
+          elif len(self.history) > 0:
+            if self.history[len(self.history)-1][2].type == "P" and self.history[len(self.history)-1][0][0] == 1 and self.history[len(self.history)-1][0][0] and (not self.history[len(self.history)-1][0][2].color):
+              return True
+            else:
+              return False
+        else:
+          return False
       else:
         pass
     
