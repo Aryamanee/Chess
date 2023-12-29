@@ -357,9 +357,13 @@ class Board:
             not self.king_moved(color)) and (not self.rook_moved(color, A1))
         else:
           return False
-
     elif self.board[currsquare[0]][currsquare[1]].type == "P":
-      pass
+      if color:
+        if endsquare[0] == currsquare[0]+1 and endsquare[1] == currsquare[1]:
+          pass
+        elif endsquare[0] == currsquare[0]+2 and endsquare[1] == currsquare[1] and currsquare[0] == 1:
+      else:
+        pass
     
     #else is king in check after move(king_safe(square) function)
     #is a same color col in the way?
