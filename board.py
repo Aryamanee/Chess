@@ -284,6 +284,9 @@ class Board:
     #runs for different types of pieces
     #this one for rooks
     if self.board[currsquare[0]][currsquare[1]].type == "R":
+      if self.board[endsquare[0]][endsquare[1]].color != None:
+        if self.board[endsquare[0]][endsquare[1]].color == color:
+          return False
       rook_offsets = [(1,0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0), (-1,0), (-2, 0), (-3, 0), (-4, 0), (-5, 0), (-6, 0), (-7, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7), (0, -1), (0, -2), (0, -3), (0, -4), (0, -5), (0, -6), (0, -7)]
       # runs if the end square for the rook is somewhere a rook would go, doesn't matter if it's off the board as that has been dealt with above
       if rook_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
@@ -295,6 +298,9 @@ class Board:
         return False
     #runs for Knights
     elif self.board[currsquare[0]][currsquare[1]].type == "N":
+      if self.board[endsquare[0]][endsquare[1]].color != None:
+        if self.board[endsquare[0]][endsquare[1]].color == color:
+          return False
       knight_offsets = [(1,2),(2,1),(1,-2),(2,-1),(-1,2),(-2,1),(-1,-2),(-2,-1)]
       #runs if the end square for the knight is somewhere a knight would go
       if knight_offsets.count((endsquare[0]-currsquare[0],endsquare[1]-currsquare[1])) == 1:
@@ -306,6 +312,9 @@ class Board:
         return False
     #runs for bishops
     elif self.board[currsquare[0]][currsquare[1]].type == "B":
+      if self.board[endsquare[0]][endsquare[1]].color != None:
+        if self.board[endsquare[0]][endsquare[1]].color == color:
+          return False
       bishop_offsets = [(7, -7), (6, -6), (5, -5), (4, -4), (3, -3), (2, -2), (1, -1), (0, 0), (-1, 1), (-2, 2), (-3, 3), (-4, 4), (-5, 5), (-6, 6), (-7, 7), (7, 7), (6, 6), (5, 5), (4, 4), (3, 3), (2, 2), (1, 1), (0, 0), (-1, -1), (-2, -2), (-3, -3), (-4, -4), (-5, -5), (-6, -6), (-7, -7)]
       # runs if the end square for the bishop is somewhere a bishop would go, doesn't matter if it's off the board as that has been dealt with above
       if bishop_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
@@ -316,6 +325,9 @@ class Board:
       else:
         return False
     elif self.board[currsquare[0]][currsquare[1]].type == "Q":
+      if self.board[endsquare[0]][endsquare[1]].color != None:
+        if self.board[endsquare[0]][endsquare[1]].color == color:
+          return False
       queen_offsets = [(1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0), (-1, 0), (-2, 0), (-3, 0), (-4, 0), (-5, 0), (-6, 0), (-7, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7), (0, -1), (0, -2), (0, -3), (0, -4), (0, -5), (0, -6), (0, -7), (7, -7), (6, -6), (5, -5), (4, -4), (3, -3), (2, -2), (1, -1), (0, 0), (-1, 1), (-2, 2), (-3, 3), (-4, 4), (-5, 5), (-6, 6), (-7, 7), (7, 7), (6, 6), (5, 5), (4, 4), (3, 3), (2, 2), (1, 1), (0, 0), (-1, -1), (-2, -2), (-3, -3), (-4, -4), (-5, -5), (-6, -6), (-7, -7)]
       # runs if the end square for the queen is somewhere a queen would go, doesn't matter if it's off the board as that has been dealt with above
       if queen_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
@@ -326,6 +338,9 @@ class Board:
       else:
         return False
     elif self.board[currsquare[0]][currsquare[1]].type == "K":
+      if self.board[endsquare[0]][endsquare[1]].color != None:
+        if self.board[endsquare[0]][endsquare[1]].color == color:
+          return False
       king_offsets = [(0,1), (0, -1), (1, 0), (1,-1), (1, 1), (1, -1), (-1, 1), (-1, -1)]
       #runs for a black king
       if color:
@@ -358,23 +373,43 @@ class Board:
         else:
           return False
     elif self.board[currsquare[0]][currsquare[1]].type == "P":
+      if self.board[endsquare[0]][endsquare[1]].color != None:
+        if self.board[endsquare[0]][endsquare[1]].color == color:
+          return False
       if color:
+        if endsquare[0] == currsquare[0]-1 and endsquare[1] == currsquare[1] and self.board[endsquare[0]][endsquare[1]] == None:
+          return True
+        elif endsquare[0] == currsquare[0]-2 and endsquare[1] == currsquare[1] and currsquare[0] == 6 and self.board[endsquare[0]+1][endsquare[1]] == None and self.board[endsquare[0]][endsquare[1]] == None:
+          return True
+        elif endsquare[0] == currsquare[0]-1 and (endsquare[1] == currsquare[1]+1 or endsquare[1] == currsquare[1]-1):
+          if self.board[endsquare[0]][endsquare[1]] != None:
+            return self.board[endsquare[0]][endsquare[1]].color != color
+          elif len(self.history) > 0:
+            if self.history[len(self.history)-1][2].type == "P" and self.history[len(self.history)-1][0][0] == 6 and self.history[len(self.history)-1][1][0] == 3 and self.history[len(self.history)-1][0][2].color != color:
+              return True
+            else:
+              return False
+          else:
+            return False
+        else:
+          return False
+      else:
         if endsquare[0] == currsquare[0]+1 and endsquare[1] == currsquare[1] and self.board[endsquare[0]][endsquare[1]] == None:
           return True
         elif endsquare[0] == currsquare[0]+2 and endsquare[1] == currsquare[1] and currsquare[0] == 1 and self.board[endsquare[0]-1][endsquare[1]] == None and self.board[endsquare[0]][endsquare[1]] == None:
           return True
         elif endsquare[0] == currsquare[0]+1 and (endsquare[1] == currsquare[1]+1 or endsquare[1] == currsquare[1]-1):
           if self.board[endsquare[0]][endsquare[1]] != None:
-            return True
+            return self.board[endsquare[0]][endsquare[1]].color != color
           elif len(self.history) > 0:
-            if self.history[len(self.history)-1][2].type == "P" and self.history[len(self.history)-1][0][0] == 1 and self.history[len(self.history)-1][0][0] and (not self.history[len(self.history)-1][0][2].color):
+            if self.history[len(self.history)-1][2].type == "P" and self.history[len(self.history)-1][0][0] == 1 and self.history[len(self.history)-1][1][0] == 4 and self.history[len(self.history)-1][0][2].color != color:
               return True
             else:
               return False
+          else:
+            return False
         else:
           return False
-      else:
-        pass
     
     #else is king in check after move(king_safe(square) function)
     #is a same color col in the way?
