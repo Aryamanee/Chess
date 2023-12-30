@@ -14,7 +14,7 @@ piece_p = pygame.image.load("assets/pieces/black-pawn.png")
 piece_q = pygame.image.load("assets/pieces/black-queen.png")
 piece_r = pygame.image.load("assets/pieces/black-rook.png")
 
-gameboard = board.Board("rnbqkbnr/ppp1ppp1/8/8/8/8/1PPPPPPP/RNBQKBN1")
+gameboard = board.Board()
 pygame.init()
 screen = pygame.display.set_mode((600, 600))
 clock = pygame.time.Clock()
@@ -31,13 +31,24 @@ while running:
           mousepos = pygame.mouse.get_pos()
           mousesquare = (mousepos[1]//75, mousepos[0]//75)
           if gameboard.board[mousesquare[0]][mousesquare[1]] == None:
-            pass
+            if selected != None:
+              if squares.count(mousesquare)==1:
+                gameboard.move(selected, mousesquare)
+                selected = None
+                turn = not turn
           else:
             if gameboard.board[mousesquare[0]][mousesquare[1]].color == turn:
               if mousesquare == selected:
                 selected = None
               else:
                 selected = mousesquare
+            else:
+              if selected!=None:
+                if squares.count(mousesquare) == 1:
+                  gameboard.move(selected, mousesquare)
+                  selected = None
+                  turn = not turn
+
   for i in range(8):
     for j in range(8):
       if i%2==0 and j%2 == 0:

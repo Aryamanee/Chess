@@ -339,6 +339,22 @@ class Board:
       bishop_offsets = [(7, -7), (6, -6), (5, -5), (4, -4), (3, -3), (2, -2), (1, -1), (0, 0), (-1, 1), (-2, 2), (-3, 3), (-4, 4), (-5, 5), (-6, 6), (-7, 7), (7, 7), (6, 6), (5, 5), (4, 4), (3, 3), (2, 2), (1, 1), (0, 0), (-1, -1), (-2, -2), (-3, -3), (-4, -4), (-5, -5), (-6, -6), (-7, -7)]
       # runs if the end square for the bishop is somewhere a bishop would go, doesn't matter if it's off the board as that has been dealt with above
       if bishop_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
+        line = []
+        if endsquare[0] - currsquare[0] > 0 and endsquare[1] - currsquare[1] > 0:
+          for i in range(1, abs(endsquare[0] - currsquare[0])):
+            line.append(self.board[currsquare[0] + i][currsquare[1] + i])
+        elif endsquare[0] - currsquare[0] < 0 and endsquare[1] - currsquare[1] < 0:
+          for i in range(1, abs(endsquare[0] - currsquare[0])):
+            line.append(self.board[currsquare[0] - i][currsquare[1] - i])
+        elif endsquare[0] - currsquare[0] < 0 and endsquare[1] - currsquare[1] > 0:
+          for i in range(1, abs(endsquare[0] - currsquare[0])):
+            line.append(self.board[currsquare[0] - i][currsquare[1] + i])
+        elif endsquare[0] - currsquare[0] > 0 and endsquare[1] - currsquare[1] < 0:
+          for i in range(1, abs(endsquare[0] - currsquare[0])):
+            line.append(self.board[currsquare[0] + i][currsquare[1] - i])
+        if line.count(None) < len(line):
+          return False
+
         # creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
         board_copy = copy.deepcopy(self.board)
         self.move(currsquare, endsquare, board_copy)
@@ -353,14 +369,34 @@ class Board:
       line = []
       # runs if the end square for the queen is somewhere a queen would go, doesn't matter if it's off the board as that has been dealt with above
       if queen_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
+        line = []
         if endsquare[0] - currsquare[0] == 0:
           if currsquare[1] < endsquare[1]:
-            for i in range(currsquare[1]+1, endsquare[1]):
+            for i in range(currsquare[1] + 1, endsquare[1]):
+              line.append(self.board[currsquare[0]][i])
+          else:
+            for i in range(currsquare[1] - 1, endsquare[1], -1):
               line.append(self.board[currsquare[0]][i])
         elif endsquare[1] - currsquare[1] == 0:
-          for i in range(endsquare[1]-1, currsquare[1], -1):
-            line.append(self.board[currsquare[0]][i])
-        if line.count(None)<len(line):
+          if currsquare[0] < endsquare[0]:
+            for i in range(currsquare[0] + 1, endsquare[0]):
+              line.append(self.board[i][currsquare[1]])
+          else:
+            for i in range(currsquare[0] - 1, endsquare[0], -1):
+              line.append(self.board[i][currsquare[1]])
+        elif endsquare[0] - currsquare[0] > 0 and endsquare[1] - currsquare[1] > 0:
+          for i in range(1, abs(endsquare[0] - currsquare[0])):
+            line.append(self.board[currsquare[0] + i][currsquare[1] + i])
+        elif endsquare[0] - currsquare[0] < 0 and endsquare[1] - currsquare[1] < 0:
+          for i in range(1, abs(endsquare[0] - currsquare[0])):
+            line.append(self.board[currsquare[0] - i][currsquare[1] - i])
+        elif endsquare[0] - currsquare[0] < 0 and endsquare[1] - currsquare[1] > 0:
+          for i in range(1, abs(endsquare[0] - currsquare[0])):
+            line.append(self.board[currsquare[0] - i][currsquare[1] + i])
+        elif endsquare[0] - currsquare[0] > 0 and endsquare[1] - currsquare[1] < 0:
+          for i in range(1, abs(endsquare[0] - currsquare[0])):
+            line.append(self.board[currsquare[0] + i][currsquare[1] - i])
+        if line.count(None) < len(line):
           return False
 
         # creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
