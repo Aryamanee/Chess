@@ -306,7 +306,6 @@ class Board:
             for i in range(currsquare[0]+1, endsquare[0]):
               line.append(self.board[i][currsquare[1]])
           else:
-            print(currsquare, endsquare)
             for i in range(currsquare[0]-1, endsquare[0], -1):
               line.append(self.board[i][currsquare[1]])
         if line.count(None)<len(line):
@@ -412,6 +411,10 @@ class Board:
       king_offsets = [(0,1), (0, -1), (1, 0), (1,-1), (1, 1), (1, -1), (-1, 1), (-1, -1)]
       #runs for a black king
       if color:
+        print(currsquare, endsquare)
+        print(endsquare == G8, currsquare == E8, self.G8 == None, self.F8 == None)
+        if endsquare == (0,6):
+         print(self.board)
         # runs if the end square for the king is somewhere a king would go, doesn't matter if it's off the board as that has been dealt with above
         if king_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
           # creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
@@ -419,6 +422,7 @@ class Board:
           self.move(currsquare, endsquare, board_copy)
           return self.king_safe(self.find_king(color, board_copy), color, board_copy)
         elif endsquare == G8 and currsquare == E8 and self.G8 == None and self.F8 == None:
+          print(self.king_moved(True), self.rook_moved(True, H8))
           return self.king_safe(E8, color) and self.king_safe(F8, color) and self.king_safe(G8, color) and (not self.king_moved(color)) and (not self.rook_moved(color, H8))
         elif endsquare == C8 and currsquare == E8 and self.D8 == None and self.C8 == None and self.B8 == None:
           return self.king_safe(E8, color) and self.king_safe(D8, color) and self.king_safe(C8, color) and (not self.king_moved(color)) and (not self.rook_moved(color, A8))
@@ -449,7 +453,7 @@ class Board:
           board_copy = copy.deepcopy(self.board)
           self.move(currsquare, endsquare, board_copy)
           return self.king_safe(self.find_king(color, board_copy), color, board_copy)
-        elif endsquare[0] == currsquare[0]+2 and endsquare[1] == currsquare[1] and currsquare[0] == 1 and self.board[endsquare[0]+1][endsquare[1]] == None and self.board[endsquare[0]][endsquare[1]] == None:
+        elif endsquare[0] == currsquare[0]+2 and endsquare[1] == currsquare[1] and currsquare[0] == 1 and self.board[currsquare[0]+1][currsquare[1]] == None and self.board[endsquare[0]][endsquare[1]] == None:
           board_copy = copy.deepcopy(self.board)
           self.move(currsquare, endsquare, board_copy)
           return self.king_safe(self.find_king(color, board_copy), color, board_copy)
@@ -460,7 +464,7 @@ class Board:
               self.move(currsquare, endsquare, board_copy)
               return self.king_safe(self.find_king(color, board_copy), color, board_copy)
           elif len(self.history) > 0:
-            if self.history[len(self.history)-1][2].type == "P" and self.history[len(self.history)-1][0][0] == 6 and self.history[len(self.history)-1][1][0] == 4 and self.history[len(self.history)-1][2].color != color:
+            if self.history[len(self.history)-1][2].type == "P" and self.history[len(self.history)-1][0][0] == 6 and self.history[len(self.history)-1][1][0] == 4 and self.history[len(self.history)-1][2].color != color and currsquare[0] == 4 and self.history[len(self.history)-1][0][1] == endsquare[1]:
               board_copy = copy.deepcopy(self.board)
               self.move(currsquare, endsquare, board_copy)
               return self.king_safe(self.find_king(color, board_copy), color, board_copy)
@@ -475,7 +479,7 @@ class Board:
           board_copy = copy.deepcopy(self.board)
           self.move(currsquare, endsquare, board_copy)
           return self.king_safe(self.find_king(color, board_copy), color, board_copy)
-        elif endsquare[0] == currsquare[0]-2 and endsquare[1] == currsquare[1] and currsquare[0] == 6 and self.board[endsquare[0]-1][endsquare[1]] == None and self.board[endsquare[0]][endsquare[1]] == None:
+        elif endsquare[0] == currsquare[0]-2 and endsquare[1] == currsquare[1] and currsquare[0] == 6 and self.board[currsquare[0]-1][currsquare[1]] == None and self.board[endsquare[0]][endsquare[1]] == None:
           board_copy = copy.deepcopy(self.board)
           self.move(currsquare, endsquare, board_copy)
           return self.king_safe(self.find_king(color, board_copy), color, board_copy)
@@ -486,7 +490,7 @@ class Board:
               self.move(currsquare, endsquare, board_copy)
               return self.king_safe(self.find_king(color, board_copy), color, board_copy)
           elif len(self.history) > 0:
-            if self.history[len(self.history)-1][2].type == "P" and self.history[len(self.history)-1][0][0] == 1 and self.history[len(self.history)-1][1][0] == 3 and self.history[len(self.history)-1][2].color != color:
+            if self.history[len(self.history)-1][2].type == "P" and self.history[len(self.history)-1][0][0] == 1 and self.history[len(self.history)-1][1][0] == 3 and self.history[len(self.history)-1][2].color != color and currsquare[0] == 3 and self.history[len(self.history)-1][0][1] == endsquare[1]:
               board_copy = copy.deepcopy(self.board)
               self.move(currsquare, endsquare, board_copy)
               return self.king_safe(self.find_king(color, board_copy), color, board_copy)
