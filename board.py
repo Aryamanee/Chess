@@ -199,7 +199,7 @@ class Board:
              none = False
           if none and ran:
             return False
-          elif abs(square[0] - file) == 1:
+          elif abs(square[1] - file) == 1:
             return False
 
     #check diagonal lines for opposite color bishops or queens
