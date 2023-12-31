@@ -333,9 +333,11 @@ class Board:
           self.move(currsquare, endsquare, board_copy)
           return self.king_safe(self.find_king(color, board_copy), color, board_copy)
         elif endsquare == G8 and currsquare == E8 and self.board[0][6] == None and self.board[0][5] == None:
-          return self.king_safe(E8, color) and self.king_safe(F8, color) and self.king_safe(G8, color) and (not self.king_moved(color)) and (not self.rook_moved(color, H8))
+          if self.board[0][7] != None:
+            return self.king_safe(E8, color) and self.king_safe(F8, color) and self.king_safe(G8, color) and (not self.king_moved(color)) and (not self.rook_moved(color, H8)) and self.board[0][7].type == "R" and self.board[0][7].color == color
         elif endsquare == C8 and currsquare == E8 and self.board[0][3] == None and self.board[0][2] == None and self.board[0][1] == None:
-          return self.king_safe(E8, color) and self.king_safe(D8, color) and self.king_safe(C8, color) and (not self.king_moved(color)) and (not self.rook_moved(color, A8))
+          if self.board[0][0] != None:
+            return self.king_safe(E8, color) and self.king_safe(D8, color) and self.king_safe(C8, color) and (not self.king_moved(color)) and (not self.rook_moved(color, A8)) and self.board[0][0].type == "R" and self.board[0][0].color == color
         else:
           return False
       #white king
@@ -348,11 +350,11 @@ class Board:
           self.move(currsquare, endsquare, board_copy)
           return self.king_safe(self.find_king(color, board_copy), color, board_copy)
         elif endsquare == G1 and currsquare == E1 and self.board[7][6] == None and self.board[7][5] == None:
-          return self.king_safe(E1, color) and self.king_safe(F1, color) and self.king_safe(G1, color) and (
-            not self.king_moved(color)) and (not self.rook_moved(color, H1))
+          if self.board[7][7]:
+            return self.king_safe(E1, color) and self.king_safe(F1, color) and self.king_safe(G1, color) and (not self.king_moved(color)) and (not self.rook_moved(color, H1)) and self.board[7][7].type == "R" and self.board[7][7].color == color
         elif endsquare == C1 and currsquare == E1 and self.board[7][3] == None and self.board[7][2] == None and self.board[7][1] == None:
-          return self.king_safe(E1, color) and self.king_safe(D1, color) and self.king_safe(C1, color) and (
-            not self.king_moved(color)) and (not self.rook_moved(color, A1))
+          if self.board[7][0]:
+            return self.king_safe(E1, color) and self.king_safe(D1, color) and self.king_safe(C1, color) and (not self.king_moved(color)) and (not self.rook_moved(color, A1)) and self.board[7][0].type == "R" and self.board[7][0].color == color
         else:
           return False
     elif self.board[currsquare[0]][currsquare[1]].type == "P":
@@ -468,7 +470,7 @@ class Board:
 
   def rook_moved(self, color, square):
     for move in self.history:
-      if move[2].type == "R" and move[2].color == color and move[0] == square:
+      if move[2].type == "R" and move[2].color == color and (move[0] == square or move[1] == square):
         return True
     return False
   #valid_moves(square)
