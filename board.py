@@ -95,72 +95,6 @@ class Board:
     #moves list
     self.history = []
 
-    #set squares
-    self.A1 = self.board[7][0]
-    self.A2 = self.board[6][0]
-    self.A3 = self.board[5][0]
-    self.A4 = self.board[4][0]
-    self.A5 = self.board[3][0]
-    self.A6 = self.board[2][0]
-    self.A7 = self.board[1][0]
-    self.A8 = self.board[0][0]
-    self.B1 = self.board[7][1]
-    self.B2 = self.board[6][1]
-    self.B3 = self.board[5][1]
-    self.B4 = self.board[4][1]
-    self.B5 = self.board[3][1]
-    self.B6 = self.board[2][1]
-    self.B7 = self.board[1][1]
-    self.B8 = self.board[0][1]
-    self.C1 = self.board[7][2]
-    self.C2 = self.board[6][2]
-    self.C3 = self.board[5][2]
-    self.C4 = self.board[4][2]
-    self.C5 = self.board[3][2]
-    self.C6 = self.board[2][2]
-    self.C7 = self.board[1][2]
-    self.C8 = self.board[0][2]
-    self.D1 = self.board[7][3]
-    self.D2 = self.board[6][3]
-    self.D3 = self.board[5][3]
-    self.D4 = self.board[4][3]
-    self.D5 = self.board[3][3]
-    self.D6 = self.board[2][3]
-    self.D7 = self.board[1][3]
-    self.D8 = self.board[0][3]
-    self.E1 = self.board[7][4]
-    self.E2 = self.board[6][4]
-    self.E3 = self.board[5][4]
-    self.E4 = self.board[4][4]
-    self.E5 = self.board[3][4]
-    self.E6 = self.board[2][4]
-    self.E7 = self.board[1][4]
-    self.E8 = self.board[0][4]
-    self.F1 = self.board[7][5]
-    self.F2 = self.board[6][5]
-    self.F3 = self.board[5][5]
-    self.F4 = self.board[4][5]
-    self.F5 = self.board[3][5]
-    self.F6 = self.board[2][5]
-    self.F7 = self.board[1][5]
-    self.F8 = self.board[0][5]
-    self.G1 = self.board[7][6]
-    self.G2 = self.board[6][6]
-    self.G3 = self.board[5][6]
-    self.G4 = self.board[4][6]
-    self.G5 = self.board[3][6]
-    self.G6 = self.board[2][6]
-    self.G7 = self.board[1][6]
-    self.G8 = self.board[0][6]
-    self.H1 = self.board[7][7]
-    self.H2 = self.board[6][7]
-    self.H3 = self.board[5][7]
-    self.H4 = self.board[4][7]
-    self.H5 = self.board[3][7]
-    self.H6 = self.board[2][7]
-    self.H7 = self.board[1][7]
-    self.H8 = self.board[0][7]
-    
   #king_safe(sqare) function
   def king_safe(self, square, color, board = []):
     if board == []:
@@ -275,21 +209,14 @@ class Board:
     elif self.board[currsquare[0]][currsquare[1]] == None:
       return False
     elif (currsquare[0]<0 or currsquare[0]>7 or currsquare[1]<0 or currsquare[1]>7) or (endsquare[0]<0 or endsquare[0]>7 or endsquare[1]<0 or endsquare[1]>7):
-      return False 
-    if self.board[currsquare[0]][currsquare[1]]:
-      color = self.board[currsquare[0]][currsquare[1]].color
-    else:
       return False
+    color = self.board[currsquare[0]][currsquare[1]].color
     if self.board[endsquare[0]][endsquare[1]] != None:
       if self.board[endsquare[0]][endsquare[1]].color == color:
         return False
-    
     #runs for different types of pieces
     #this one for rooks
     if self.board[currsquare[0]][currsquare[1]].type == "R":
-      if self.board[endsquare[0]][endsquare[1]] != None:
-        if self.board[endsquare[0]][endsquare[1]].color == color:
-          return False
       rook_offsets = [(1,0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0), (-1,0), (-2, 0), (-3, 0), (-4, 0), (-5, 0), (-6, 0), (-7, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7), (0, -1), (0, -2), (0, -3), (0, -4), (0, -5), (0, -6), (0, -7)]
       # runs if the end square for the rook is somewhere a rook would go, doesn't matter if it's off the board as that has been dealt with above
       if rook_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
@@ -318,9 +245,6 @@ class Board:
         return False
     #runs for Knights
     elif self.board[currsquare[0]][currsquare[1]].type == "N":
-      if self.board[endsquare[0]][endsquare[1]] != None:
-        if self.board[endsquare[0]][endsquare[1]].color == color:
-          return False
       knight_offsets = [(1,2),(2,1),(1,-2),(2,-1),(-1,2),(-2,1),(-1,-2),(-2,-1)]
       #runs if the end square for the knight is somewhere a knight would go
       if knight_offsets.count((endsquare[0]-currsquare[0],endsquare[1]-currsquare[1])) == 1:
@@ -332,9 +256,6 @@ class Board:
         return False
     #runs for bishops
     elif self.board[currsquare[0]][currsquare[1]].type == "B":
-      if self.board[endsquare[0]][endsquare[1]] != None:
-        if self.board[endsquare[0]][endsquare[1]].color == color:
-          return False
       bishop_offsets = [(7, -7), (6, -6), (5, -5), (4, -4), (3, -3), (2, -2), (1, -1), (0, 0), (-1, 1), (-2, 2), (-3, 3), (-4, 4), (-5, 5), (-6, 6), (-7, 7), (7, 7), (6, 6), (5, 5), (4, 4), (3, 3), (2, 2), (1, 1), (0, 0), (-1, -1), (-2, -2), (-3, -3), (-4, -4), (-5, -5), (-6, -6), (-7, -7)]
       # runs if the end square for the bishop is somewhere a bishop would go, doesn't matter if it's off the board as that has been dealt with above
       if bishop_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
@@ -361,9 +282,6 @@ class Board:
       else:
         return False
     elif self.board[currsquare[0]][currsquare[1]].type == "Q":
-      if self.board[endsquare[0]][endsquare[1]] != None:
-        if self.board[endsquare[0]][endsquare[1]].color == color:
-          return False
       queen_offsets = [(1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0), (-1, 0), (-2, 0), (-3, 0), (-4, 0), (-5, 0), (-6, 0), (-7, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7), (0, -1), (0, -2), (0, -3), (0, -4), (0, -5), (0, -6), (0, -7), (7, -7), (6, -6), (5, -5), (4, -4), (3, -3), (2, -2), (1, -1), (0, 0), (-1, 1), (-2, 2), (-3, 3), (-4, 4), (-5, 5), (-6, 6), (-7, 7), (7, 7), (6, 6), (5, 5), (4, 4), (3, 3), (2, 2), (1, 1), (0, 0), (-1, -1), (-2, -2), (-3, -3), (-4, -4), (-5, -5), (-6, -6), (-7, -7)]
       line = []
       # runs if the end square for the queen is somewhere a queen would go, doesn't matter if it's off the board as that has been dealt with above
@@ -405,41 +323,34 @@ class Board:
       else:
         return False
     elif self.board[currsquare[0]][currsquare[1]].type == "K":
-      if self.board[endsquare[0]][endsquare[1]] != None:
-        if self.board[endsquare[0]][endsquare[1]].color == color:
-          return False
-      king_offsets = [(0,1), (0, -1), (1, 0), (1,-1), (1, 1), (1, -1), (-1, 1), (-1, -1)]
+      king_offsets = [(0,1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)]
       #runs for a black king
       if color:
-        print(currsquare, endsquare)
-        print(endsquare == G8, currsquare == E8, self.G8 == None, self.F8 == None)
-        if endsquare == (0,6):
-         print(self.board)
         # runs if the end square for the king is somewhere a king would go, doesn't matter if it's off the board as that has been dealt with above
         if king_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
           # creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
           board_copy = copy.deepcopy(self.board)
           self.move(currsquare, endsquare, board_copy)
           return self.king_safe(self.find_king(color, board_copy), color, board_copy)
-        elif endsquare == G8 and currsquare == E8 and self.G8 == None and self.F8 == None:
-          print(self.king_moved(True), self.rook_moved(True, H8))
+        elif endsquare == G8 and currsquare == E8 and self.board[0][6] == None and self.board[0][5] == None:
           return self.king_safe(E8, color) and self.king_safe(F8, color) and self.king_safe(G8, color) and (not self.king_moved(color)) and (not self.rook_moved(color, H8))
-        elif endsquare == C8 and currsquare == E8 and self.D8 == None and self.C8 == None and self.B8 == None:
+        elif endsquare == C8 and currsquare == E8 and self.board[0][3] == None and self.board[0][2] == None and self.board[0][1] == None:
           return self.king_safe(E8, color) and self.king_safe(D8, color) and self.king_safe(C8, color) and (not self.king_moved(color)) and (not self.rook_moved(color, A8))
         else:
           return False
       #white king
       else:
+
         # runs if the end square for the king is somewhere a king would go, doesn't matter if it's off the board as that has been dealt with above
         if king_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
           # creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
           board_copy = copy.deepcopy(self.board)
           self.move(currsquare, endsquare, board_copy)
           return self.king_safe(self.find_king(color, board_copy), color, board_copy)
-        elif endsquare == G1 and currsquare == E1 and self.G1 == None and self.F1 == None:
+        elif endsquare == G1 and currsquare == E1 and self.board[7][6] == None and self.board[7][5] == None:
           return self.king_safe(E1, color) and self.king_safe(F1, color) and self.king_safe(G1, color) and (
             not self.king_moved(color)) and (not self.rook_moved(color, H1))
-        elif endsquare == C1 and currsquare == E1 and self.C1 == None and self.D1 == None and self.B1 == None:
+        elif endsquare == C1 and currsquare == E1 and self.board[7][3] == None and self.board[7][2] == None and self.board[7][1] == None:
           return self.king_safe(E1, color) and self.king_safe(D1, color) and self.king_safe(C1, color) and (
             not self.king_moved(color)) and (not self.rook_moved(color, A1))
         else:
@@ -505,14 +416,34 @@ class Board:
     #is a same color col in the way?
     #for castles - has the king or the rook in question moved and is there anything blocking the path(king_safe(square) function)
   #move function
-  def move(self, currsquare, endsquare, board = []):
+  def move(self, currsquare, endsquare, board = [], promo = "P"):
     log_move = board == []
     if board == []:
       board = self.board
     color = board[currsquare[0]][currsquare[1]].color
     piece  = self.board[currsquare[0]][currsquare[1]]
+    if piece.type == "K":
+      if abs(currsquare[1] - endsquare[1]) == 2:
+        if color:
+          if endsquare == G8:
+            self.move(H8, F8)
+          elif endsquare == C8:
+            self.move(A8, D8)
+        else:
+          if endsquare == G1:
+            self.move(H1, F1)
+          elif endsquare == C1:
+            self.move(A1, D1)
+
     board[endsquare[0]][endsquare[1]] = board[currsquare[0]][currsquare[1]]
     board[currsquare[0]][currsquare[1]] = None
+    if piece.type == "P":
+      if color:
+        if endsquare[0] == 7:
+          board[endsquare[0]][endsquare[1]].type = promo
+      else:
+        if endsquare[0] == 0:
+          board[endsquare[0]][endsquare[1]].type = promo
     if log_move:
       if self.king_safe(self.find_king(not color), not color):
         self.history.append([currsquare, endsquare, piece, 0])
@@ -546,7 +477,7 @@ class Board:
     moves = []
     if self.board[square[0]][square[1]] != None:
       if self.board[square[0]][square[1]].type == "K":
-        king_offsets = [(0,1), (0, -1), (1, 0), (1,-1), (1, 1), (1, -1), (-1, 1), (-1, -1), (0, 2), (0, -2)]
+        king_offsets = [(0,1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1), (0, 2), (0, -2)]
         for offset in king_offsets:
           newsquare = (square[0] + offset[0], square[1] + offset[1])
           if self.is_valid_move(square, newsquare):
