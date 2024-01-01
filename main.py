@@ -48,8 +48,8 @@ def promote(side):
 
     pygame.display.flip()
     clock.tick(60)
-def game(turn = False):
-  gameboard = board.Board()
+def game(turn = False, time_control = (-1, -1)):
+  gameboard = board.Board(turn = turn, time_control=time_control)
   running = True
   selected = None
   squares = []
@@ -64,16 +64,15 @@ def game(turn = False):
               if selected != None:
                 if squares.count(mousesquare)==1:
                   if gameboard.board[selected[0]][selected[1]].type == "P" and (mousesquare[0] == 0 or mousesquare[0] == 7):
-                    promo = promote(turn)
+                    promo = promote(gameboard.turn)
                     if promo == None:
                       running = False
                     gameboard.move(selected, mousesquare, promo=promo)
                   else:
                     gameboard.move(selected, mousesquare)
                   selected = None
-                  turn = not turn
             else:
-              if gameboard.board[mousesquare[0]][mousesquare[1]].color == turn:
+              if gameboard.board[mousesquare[0]][mousesquare[1]].color == gameboard.turn:
                 if mousesquare == selected:
                   selected = None
                 else:
@@ -83,14 +82,13 @@ def game(turn = False):
                   if squares.count(mousesquare) == 1:
                     if gameboard.board[selected[0]][selected[1]].type == "P" and (
                             mousesquare[0] == 0 or mousesquare[0] == 7):
-                      promo = promote(turn)
+                      promo = promote(gameboard.turn)
                       if promo == None:
                         running = False
                       gameboard.move(selected, mousesquare, promo=promo)
                     else:
                       gameboard.move(selected, mousesquare)
                     selected = None
-                    turn = not turn
 
     for i in range(8):
       for j in range(8):

@@ -70,11 +70,12 @@ H8 = (0, 7)
 #BOARD CLASS
 class Board:
   #INITIALIZE BOARD, args of time control and position
-  def __init__(self, position = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", time_control = (-1, -1)):
+  def __init__(self, position = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", time_control = (-1, -1), turn = False):
     #set time control
     self.time_control = time_control
     #set board
     self.board = []
+    self.turn = turn
     lines = position.split("/")
     line_n = 0
     for line in lines:
@@ -94,7 +95,10 @@ class Board:
 
     #moves list
     self.history = []
-
+    if turn:
+      self.board_turn = self.board_turn.reverse()
+      for sublist in self.board_turn:
+        sublist.reverse()
   #king_safe(sqare) function
   def king_safe(self, square, color, board = []):
     if board == []:
@@ -437,6 +441,12 @@ class Board:
           elif endsquare == C1:
             self.move(A1, D1)
 
+    if abs(endsquare[1] - currsquare[1]) == 1 and self.board[endsquare[0]][endsquare[1]] == None and piece.type == "P" and log_move:
+      if color:
+        self.board[endsquare[0] - 1][endsquare[1]] = None
+      else:
+        self.board[endsquare[0] + 1][endsquare[1]] = None
+
     board[endsquare[0]][endsquare[1]] = board[currsquare[0]][currsquare[1]]
     board[currsquare[0]][currsquare[1]] = None
     if piece.type == "P":
@@ -446,7 +456,9 @@ class Board:
       else:
         if endsquare[0] == 0:
           board[endsquare[0]][endsquare[1]].type = promo
+
     if log_move:
+      self.turn = not self.turn
       if self.king_safe(self.find_king(not color), not color):
         self.history.append([currsquare, endsquare, piece, 0])
       else:
