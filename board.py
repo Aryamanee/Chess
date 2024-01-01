@@ -531,4 +531,26 @@ class Board:
             moves.append(newsquare)
       return moves
 #all_valid_moves(side)
+  def all_valid_moves(self, side):
+    squares = []
+    moves = []
+    for rank in range(8):
+      for file in range(8):
+        if self.board[rank][file] != None:
+          if self.board[rank][file].color == side:
+            squares.append((rank, file))
+    for square in squares:
+      move_piece = self.valid_moves(square)
+      for move in move_piece:
+          if self.board[square[0]][square[1]].type == "P" and square[0] == 6 and side:
+            promos = ["Q", "R", "N", "B"]
+            for promo in promos:
+              moves.append((square, move, promo))
+          elif self.board[square[0]][square[1]].type == "P" and square[0] == 1:
+            promos = ["Q", "R", "N", "B"]
+            for promo in promos:
+              moves.append((square, move, promo))
+          else:
+            moves.append((square, move))
+    return moves
   #returns all valid moves for all pieces for the side provided

@@ -15,7 +15,7 @@ piece_q = pygame.image.load("assets/pieces/black-queen.png")
 piece_r = pygame.image.load("assets/pieces/black-rook.png")
 
 pygame.init()
-screen = pygame.display.set_mode((600, 600))
+screen = pygame.display.set_mode((900, 600))
 clock = pygame.time.Clock()
 
 def promote(side):
@@ -25,26 +25,26 @@ def promote(side):
           return None
       elif event.type == pygame.MOUSEBUTTONDOWN:
         mousepos = pygame.mouse.get_pos()
-        if mousepos[0]>150 and mousepos[0]<225 and mousepos[1]>262.5 and mousepos[1]<337.5:
+        if mousepos[0]>300 and mousepos[0]<375 and mousepos[1]>262.5 and mousepos[1]<337.5:
           return "Q"
-        elif mousepos[0]>225 and mousepos[0]<300 and mousepos[1]>262.5 and mousepos[1]<337.5:
-          return "R"
-        elif mousepos[0]>300 and mousepos[0]<375 and mousepos[1]>262.5 and mousepos[1]<337.5:
-          return "B"
         elif mousepos[0]>375 and mousepos[0]<450 and mousepos[1]>262.5 and mousepos[1]<337.5:
+          return "R"
+        elif mousepos[0]>450 and mousepos[0]<525 and mousepos[1]>262.5 and mousepos[1]<337.5:
+          return "B"
+        elif mousepos[0]>525 and mousepos[0]<600 and mousepos[1]>262.5 and mousepos[1]<337.5:
           return "N"
 
     screen.fill((112, 102, 119))
     if side:
-      screen.blit(piece_q, (150, 262.5))
-      screen.blit(piece_r, (225, 262.5))
-      screen.blit(piece_b, (300, 262.5))
-      screen.blit(piece_n, (375, 262.5))
+      screen.blit(piece_q, (300, 262.5))
+      screen.blit(piece_r, (375, 262.5))
+      screen.blit(piece_b, (450, 262.5))
+      screen.blit(piece_n, (525, 262.5))
     else:
-      screen.blit(piece_Q, (150, 262.5))
-      screen.blit(piece_R, (225, 262.5))
-      screen.blit(piece_B, (300, 262.5))
-      screen.blit(piece_N, (375, 262.5))
+      screen.blit(piece_Q, (300, 262.5))
+      screen.blit(piece_R, (375, 262.5))
+      screen.blit(piece_B, (450, 262.5))
+      screen.blit(piece_N, (525, 262.5))
 
     pygame.display.flip()
     clock.tick(60)
@@ -54,6 +54,16 @@ def game(turn = False, time_control = (-1, -1)):
   selected = None
   squares = []
   while running:
+    if gameboard.all_valid_moves(False) == []:
+      if gameboard.king_safe(gameboard.find_king(False), False):
+        print("Stalemate")
+      else:
+        print("Black Wins!")
+    elif gameboard.all_valid_moves(True) == []:
+      if gameboard.king_safe(gameboard.find_king(True), True):
+        print("Stalemate")
+      else:
+        print("White Wins!")
     for event in pygame.event.get():
           if event.type == pygame.QUIT:
               running = False
