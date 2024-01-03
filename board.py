@@ -70,9 +70,8 @@ H8 = (0, 7)
 #BOARD CLASS
 class Board:
   #INITIALIZE BOARD, args of time control and position
-  def __init__(self, position = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", time_control = (-1, -1), turn = False):
+  def __init__(self, position = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", turn = False):
     #set time control
-    self.time_control = time_control
     #set board
     self.board = []
     self.turn = turn
@@ -92,13 +91,8 @@ class Board:
           if col > len(line)-1:
             break
       line_n+=1
-
     #moves list
     self.history = []
-    if turn:
-      self.board_turn = self.board_turn.reverse()
-      for sublist in self.board_turn:
-        sublist.reverse()
   #king_safe(sqare) function
   def king_safe(self, square, color, board = []):
     if board == []:

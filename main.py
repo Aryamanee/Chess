@@ -1,5 +1,6 @@
 import board
 import pygame
+import datetime
 
 piece_B = pygame.image.load("assets/pieces/white-bishop.png")
 piece_K = pygame.image.load("assets/pieces/white-king.png")
@@ -15,24 +16,29 @@ piece_q = pygame.image.load("assets/pieces/black-queen.png")
 piece_r = pygame.image.load("assets/pieces/black-rook.png")
 
 pygame.init()
-screen = pygame.display.set_mode((900, 600))
+screen = pygame.display.set_mode((800, 600))
 clock = pygame.time.Clock()
 
-def promote(side):
+def promote(side, time_control, time_w, time_b):
   while True:
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
-          return None
+          return None, time_w, time_b
+      elif event.type == 0 and time_control != (-1, -1):
+            if side:
+              time_b -= 1
+            else:
+              time_w -= 1
       elif event.type == pygame.MOUSEBUTTONDOWN:
         mousepos = pygame.mouse.get_pos()
         if mousepos[0]>300 and mousepos[0]<375 and mousepos[1]>262.5 and mousepos[1]<337.5:
-          return "Q"
+          return "Q", time_w, time_b
         elif mousepos[0]>375 and mousepos[0]<450 and mousepos[1]>262.5 and mousepos[1]<337.5:
-          return "R"
+          return "R", time_w, time_b
         elif mousepos[0]>450 and mousepos[0]<525 and mousepos[1]>262.5 and mousepos[1]<337.5:
-          return "B"
+          return "B", time_w, time_b
         elif mousepos[0]>525 and mousepos[0]<600 and mousepos[1]>262.5 and mousepos[1]<337.5:
-          return "N"
+          return "N", time_w, time_b
 
     screen.fill((112, 102, 119))
     if side:
@@ -49,10 +55,14 @@ def promote(side):
     pygame.display.flip()
     clock.tick(60)
 def game(turn = False, time_control = (-1, -1)):
-  gameboard = board.Board(turn = turn, time_control=time_control)
+  screen.fill((250, 247, 246))
+  gameboard = board.Board(turn = turn)
+  font = pygame.font.Font('freesansbold.ttf', 32)
   running = True
   selected = None
   squares = []
+  time_w = time_b = time_control[0]
+  pygame.time.set_timer(0, 1000)
   while running:
     if gameboard.all_valid_moves(False) == []:
       if gameboard.king_safe(gameboard.find_king(False), False):
@@ -67,38 +77,66 @@ def game(turn = False, time_control = (-1, -1)):
     for event in pygame.event.get():
           if event.type == pygame.QUIT:
               running = False
+          elif event.type == 0 and time_control != (-1, -1):
+            if gameboard.turn:
+              time_b -= 1
+              print(datetime.timedelta(seconds = time_b))
+            else:
+              time_w -= 1
+              print(datetime.timedelta(seconds = time_w))
           elif event.type == pygame.MOUSEBUTTONDOWN:
             mousepos = pygame.mouse.get_pos()
             mousesquare = (mousepos[1]//75, mousepos[0]//75)
-            if gameboard.board[mousesquare[0]][mousesquare[1]] == None:
-              if selected != None:
-                if squares.count(mousesquare)==1:
-                  if gameboard.board[selected[0]][selected[1]].type == "P" and (mousesquare[0] == 0 or mousesquare[0] == 7):
-                    promo = promote(gameboard.turn)
-                    if promo == None:
-                      running = False
-                    gameboard.move(selected, mousesquare, promo=promo)
-                  else:
-                    gameboard.move(selected, mousesquare)
-                  selected = None
-            else:
-              if gameboard.board[mousesquare[0]][mousesquare[1]].color == gameboard.turn:
-                if mousesquare == selected:
-                  selected = None
-                else:
-                  selected = mousesquare
-              else:
-                if selected!=None:
-                  if squares.count(mousesquare) == 1:
-                    if gameboard.board[selected[0]][selected[1]].type == "P" and (
-                            mousesquare[0] == 0 or mousesquare[0] == 7):
-                      promo = promote(gameboard.turn)
+            if mousesquare[0] >= 0 and mousesquare[0] <=7 and mousesquare[1] >= 0 and mousesquare[1] <=7:
+              if gameboard.board[mousesquare[0]][mousesquare[1]] == None:
+                if selected != None:
+                  if squares.count(mousesquare)==1:
+                    if gameboard.board[selected[0]][selected[1]].type == "P" and (mousesquare[0] == 0 or mousesquare[0] == 7):
+                      promo, time_w, time_b = promote(gameboard.turn, time_control, time_w, time_b)
                       if promo == None:
                         running = False
+                      if time_control!=(-1, -1):
+                        if gameboard.turn:
+                          time_b += time_control[1]
+                        else:
+                          time_w += time_control[1]
                       gameboard.move(selected, mousesquare, promo=promo)
                     else:
+                      if time_control!=(-1, -1):
+                        if gameboard.turn:
+                          time_b += time_control[1]
+                        else:
+                          time_w += time_control[1]
                       gameboard.move(selected, mousesquare)
                     selected = None
+              else:
+                if gameboard.board[mousesquare[0]][mousesquare[1]].color == gameboard.turn:
+                  if mousesquare == selected:
+                    selected = None
+                  else:
+                    selected = mousesquare
+                else:
+                  if selected!=None:
+                    if squares.count(mousesquare) == 1:
+                      if gameboard.board[selected[0]][selected[1]].type == "P" and (
+                              mousesquare[0] == 0 or mousesquare[0] == 7):
+                        promo, time_w, time_b = promote(gameboard.turn, time_control, time_w, time_b)
+                        if promo == None:
+                          running = False
+                        if time_control!=(-1, -1):
+                          if gameboard.turn:
+                            time_b += time_control[1]
+                          else:
+                            time_w += time_control[1]
+                        gameboard.move(selected, mousesquare, promo=promo)
+                      else:
+                        if time_control!=(-1, -1):
+                          if gameboard.turn:
+                            time_b += time_control[1]
+                          else:
+                            time_w += time_control[1]
+                        gameboard.move(selected, mousesquare)
+                      selected = None
 
     for i in range(8):
       for j in range(8):
@@ -112,6 +150,7 @@ def game(turn = False, time_control = (-1, -1)):
            color = (204, 183, 174)
         pygame.draw.rect(screen, color, (75*i, 75*j, 75, 75))
     if selected != None:
+      squares = []
       squares = gameboard.valid_moves(selected)
     else:
       squares = []
@@ -155,6 +194,26 @@ def game(turn = False, time_control = (-1, -1)):
           if check:
             pygame.draw.rect(screen, (255, 0, 0), (75*file, 75*rank, 75, 75))
           screen.blit(piece, (75*file, 75*rank))
+
+    #draw sidebar
+    if not time_control == (-1, -1):
+      white_clock = font.render(str(datetime.timedelta(seconds=time_w)), False, (0, 0, 0), (200, 200, 200))
+      black_clock = font.render(str(datetime.timedelta(seconds=time_b)), False, (0, 0, 0), (200, 200, 200))
+      white_clock_rect = white_clock.get_rect()
+      black_clock_rect = black_clock.get_rect()
+      white_clock_rect.center = (700, 500)
+      black_clock_rect.center = (700, 100)
+      screen.blit(white_clock, white_clock_rect)
+      screen.blit(black_clock, black_clock_rect)
+    else:
+      white_clock = font.render("NO CLOCK", True, (0, 0, 0), (200, 200, 200))
+      black_clock = font.render("NO CLOCK", True, (0, 0, 0), (200, 200, 200))
+      white_clock_rect = white_clock.get_rect()
+      black_clock_rect = black_clock.get_rect()
+      white_clock_rect.center = (700, 500)
+      black_clock_rect.center = (700, 100)
+      screen.blit(white_clock, white_clock_rect)
+      screen.blit(black_clock, black_clock_rect)
 
     pygame.display.flip()
     clock.tick(60)
