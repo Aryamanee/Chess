@@ -1,6 +1,7 @@
 import board
 import pygame
 import datetime
+import evaluation
 
 piece_B = pygame.image.load("assets/pieces/white-bishop.png")
 piece_K = pygame.image.load("assets/pieces/white-king.png")
@@ -57,6 +58,7 @@ def promote(side, time_control, time_w, time_b):
 def game(turn = False, time_control = (-1, -1)):
   screen.fill((250, 247, 246))
   gameboard = board.Board(turn = turn)
+  eval = evaluation.eval(gameboard)
   font = pygame.font.Font('freesansbold.ttf', 32)
   running = True
   selected = None
@@ -214,6 +216,10 @@ def game(turn = False, time_control = (-1, -1)):
       black_clock_rect.center = (700, 100)
       screen.blit(white_clock, white_clock_rect)
       screen.blit(black_clock, black_clock_rect)
+    analysis = font.render(str(eval.check_position()), True, (0,0,0), (200, 200, 200))
+    analysis_rect = analysis.get_rect()
+    analysis_rect.center = (700, 300)
+    screen.blit(analysis, analysis_rect)
 
     pygame.display.flip()
     clock.tick(60)
