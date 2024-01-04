@@ -526,6 +526,7 @@ class Board:
             moves.append(newsquare)
       return moves
 #all_valid_moves(side)
+  #returns all valid moves for all pieces for the side provided
   def all_valid_moves(self, side):
     squares = []
     moves = []
@@ -548,4 +549,34 @@ class Board:
           else:
             moves.append((square, move))
     return moves
-  #returns all valid moves for all pieces for the side provided
+  
+  def material(self):
+    mw = mb = 0
+    for rank in range(8):
+      for file in range(8):
+        if self.find_square((rank, file)) != None:
+          if self.find_square((rank, file)).color:
+            type = self.find_square((rank, file)).type
+            if type == "Q":
+              mb+=9
+            elif type == "R":
+              mb+=5
+            elif type == "B" or type == "N":
+              mb+=3
+            elif type == "P":
+              mb+=1
+          else:
+            type = self.find_square((rank, file)).type
+            if type == "Q":
+              mw+=9
+            elif type == "R":
+              mw+=5
+            elif type == "B" or type == "N":
+              mw+=3
+            elif type == "P":
+              mw+=1
+    return (mw, mb)
+  
+  def material_diff(self):
+    material = self.material()
+    return material[0] - material[1]
