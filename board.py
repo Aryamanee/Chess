@@ -427,14 +427,14 @@ class Board:
       if abs(currsquare[1] - endsquare[1]) == 2:
         if color:
           if endsquare == G8:
-            self.move(H8, F8)
+            self.move(H8, F8, board=self.board)
           elif endsquare == C8:
-            self.move(A8, D8)
+            self.move(A8, D8, board=self.board)
         else:
           if endsquare == G1:
-            self.move(H1, F1)
+            self.move(H1, F1, board=self.board)
           elif endsquare == C1:
-            self.move(A1, D1)
+            self.move(A1, D1, board=self.board)
 
     if abs(endsquare[1] - currsquare[1]) == 1 and self.board[endsquare[0]][endsquare[1]] == None and piece.type == "P" and log_move:
       if color:
@@ -542,7 +542,7 @@ class Board:
             promos = ["Q", "R", "N", "B"]
             for promo in promos:
               moves.append((square, move, promo))
-          elif self.board[square[0]][square[1]].type == "P" and square[0] == 1:
+          elif self.board[square[0]][square[1]].type == "P" and square[0] == 1 and not side:
             promos = ["Q", "R", "N", "B"]
             for promo in promos:
               moves.append((square, move, promo))
