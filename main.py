@@ -57,7 +57,7 @@ def promote(side, time_control, time_w, time_b):
     clock.tick(60)
 def game(turn = False, time_control = (-1, -1)):
   gameboard = board.Board(turn = turn)
-  eval = evaluation.eval(gameboard)
+  #eval = evaluation.eval(gameboard)
   font = pygame.font.Font('freesansbold.ttf', 32)
   running = True
   selected = None
@@ -66,7 +66,7 @@ def game(turn = False, time_control = (-1, -1)):
   pygame.time.set_timer(0, 1000)
   while running:
     screen.fill((250, 247, 246))
-    if gameboard.all_valid_moves(False) == []:
+    """if gameboard.all_valid_moves(False) == []:
       if gameboard.king_safe(gameboard.find_king(False), False):
         print("Stalemate")
       else:
@@ -75,7 +75,7 @@ def game(turn = False, time_control = (-1, -1)):
       if gameboard.king_safe(gameboard.find_king(True), True):
         print("Stalemate")
       else:
-        print("White Wins!")
+        print("White Wins!")"""
     for event in pygame.event.get():
           if event.type == pygame.QUIT:
               running = False
@@ -139,6 +139,8 @@ def game(turn = False, time_control = (-1, -1)):
                             time_w += time_control[1]
                         gameboard.move(selected, mousesquare)
                       selected = None
+            else:
+              gameboard.unmove()
 
     for i in range(8):
       for j in range(8):
@@ -152,7 +154,6 @@ def game(turn = False, time_control = (-1, -1)):
            color = (204, 183, 174)
         pygame.draw.rect(screen, color, (75*i, 75*j, 75, 75))
     if selected != None:
-      squares = []
       squares = gameboard.valid_moves(selected)
     else:
       squares = []
@@ -170,7 +171,7 @@ def game(turn = False, time_control = (-1, -1)):
               piece = piece_b
             elif gameboard.board[rank][file].type == "K":
               piece = piece_k
-              check = not gameboard.king_safe(gameboard.find_king(True), True)
+              #check = not gameboard.king_safe(gameboard.find_king(True), True)
             elif gameboard.board[rank][file].type == "N":
               piece = piece_n
             elif gameboard.board[rank][file].type == "P":
@@ -184,7 +185,7 @@ def game(turn = False, time_control = (-1, -1)):
               piece = piece_B
             elif gameboard.board[rank][file].type == "K":
               piece = piece_K
-              check = not gameboard.king_safe(gameboard.find_king(False), False)
+              #check = not gameboard.king_safe(gameboard.find_king(False), False)
             elif gameboard.board[rank][file].type == "N":
               piece = piece_N
             elif gameboard.board[rank][file].type == "P":
@@ -216,10 +217,10 @@ def game(turn = False, time_control = (-1, -1)):
       black_clock_rect.center = (700, 100)
       screen.blit(white_clock, white_clock_rect)
       screen.blit(black_clock, black_clock_rect)
-    analysis = font.render(str(round(eval.check_position(), 3)), True, (0,0,0), (200, 200, 200))
-    analysis_rect = analysis.get_rect()
-    analysis_rect.center = (700, 300)
-    screen.blit(analysis, analysis_rect)
+    #analysis = font.render(str(round(eval.check_position(), 3)), True, (0,0,0), (200, 200, 200))
+    #analysis_rect = analysis.get_rect()
+    #analysis_rect.center = (700, 300)
+    #screen.blit(analysis, analysis_rect)
 
     pygame.display.flip()
     clock.tick(60)

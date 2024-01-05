@@ -1,5 +1,4 @@
 import board
-import copy
 
 # Move Analyzer
 # takes current board situation and color of analyzing
@@ -9,20 +8,18 @@ class eval():
 
     # check_position function
     # checks material advantage of side
-    def check_position(self, Board = []):
-        if Board == []:
-             Board = self.board
+    def check_position(self):
         midgamethreshold = 15
         endgamethreshold = 60
-        pieces = Board.material()
+        pieces = self.board.material()
         pieces_white = pieces[0]
         pieces_black = pieces[1]
-        king_safety_white = self.king_safety(False, Board)
-        king_safety_black = self.king_safety(True, Board)
-        development_white = [Board.find_square(board.B1) == None, Board.find_square(board.C1) == None, Board.find_square(board.F1) == None, Board.find_square(board.G1) == None, Board.find_square(board.A1) == None, Board.find_square(board.H1) == None, Board.find_square(board.A2) == None, Board.find_square(board.B2) == None, Board.find_square(board.C2) == None, Board.find_square(board.D2) == None, Board.find_square(board.E2) == None, Board.find_square(board.F2) == None, Board.find_square(board.G2) == None, Board.find_square(board.H2) == None].count(True)
-        development_black = [Board.find_square(board.B8) == None, Board.find_square(board.C8) == None, Board.find_square(board.F8) == None, Board.find_square(board.G8) == None, Board.find_square(board.A8) == None, Board.find_square(board.H8) == None, Board.find_square(board.A7) == None, Board.find_square(board.B7) == None, Board.find_square(board.C7) == None, Board.find_square(board.D7) == None, Board.find_square(board.E7) == None, Board.find_square(board.F7) == None, Board.find_square(board.G7) == None, Board.find_square(board.H7) == None].count(True)
-        control_white = len(Board.all_valid_moves(False))
-        control_black = len(Board.all_valid_moves(True))
+        king_safety_white = self.king_safety(False)
+        king_safety_black = self.king_safety(True)
+        development_white = [self.board.find_square(board.B1) == None, self.board.find_square(board.C1) == None, self.board.find_square(board.F1) == None, self.board.find_square(board.G1) == None, self.board.find_square(board.A1) == None, self.board.find_square(board.H1) == None, self.board.find_square(board.A2) == None, self.board.find_square(board.B2) == None, self.board.find_square(board.C2) == None, self.board.find_square(board.D2) == None, self.board.find_square(board.E2) == None, self.board.find_square(board.F2) == None, self.board.find_square(board.G2) == None, self.board.find_square(board.H2) == None].count(True)
+        development_black = [self.board.find_square(board.B8) == None, self.board.find_square(board.C8) == None, self.board.find_square(board.F8) == None, self.board.find_square(board.G8) == None, self.board.find_square(board.A8) == None, self.board.find_square(board.H8) == None, self.board.find_square(board.A7) == None, self.board.find_square(board.B7) == None, self.board.find_square(board.C7) == None, self.board.find_square(board.D7) == None, self.board.find_square(board.E7) == None, self.board.find_square(board.F7) == None, self.board.find_square(board.G7) == None, self.board.find_square(board.H7) == None].count(True)
+        control_white = len(self.board.all_valid_moves(False))
+        control_black = len(self.board.all_valid_moves(True))
         phase =  (development_white + development_black)+78-pieces_white-pieces_black
         if phase < midgamethreshold:
             center_control_weight = 1
@@ -40,10 +37,8 @@ class eval():
             square_control_weight = 1
             material_advantage_weight = 1
         return (king_safety_white - king_safety_black)*king_saftey_weight + (control_white - control_black)*square_control_weight + (pieces_white - pieces_black)*material_advantage_weight
-    def king_safety(self, side, Board: board.Board = []):
-        if Board == []:
-             Board = self.board
-        king_square = Board.find_king(side)
+    def king_safety(self, side):
+        king_square = self.board.find_king(side)
         if side:
             king_distance_penalty = -king_square[0]
         else:
@@ -53,15 +48,15 @@ class eval():
         for offset in king_offsets:
             if king_square[0] + offset[0] >=0 and king_square[0] + offset[0] <=7 and king_square[1] + offset[1] >=0 and king_square[1] + offset[1] <=7:
                 squares_around_king.append((king_square[0]+offset[0], king_square[1]+offset[1]))
-        opponent_moves = Board.all_valid_moves(not side)
+        opponent_moves = self.board.all_valid_moves(not side)
         king_safety = 0
         for move in range(len(opponent_moves)):
             opponent_moves[move] = opponent_moves[move][1]
         for move in opponent_moves:
             king_safety -= squares_around_king.count(move) == 1
         for square in squares_around_king:
-            if Board.find_square(square) != None:
-                if Board.find_square(square).color == side:
+            if self.board.find_square(square) != None:
+                if self.board.find_square(square).color == side:
                     king_safety+=1
         king_safety += king_distance_penalty
         return king_safety
@@ -76,43 +71,44 @@ class eval():
     # returns move with highest rating
 
     #https://www.youtube.com/watch?v=l-hh51ncgDI&ab_channel=SebastianLague - base minimax code
-    def minimax(self, Board: board.Board, depth, side, alpha = -float("inf"), beta = float("inf")):
-        valid_moves_side = Board.all_valid_moves(side)
+    def minimax(self, depth, side, alpha = -float("inf"), beta = float("inf")):
+        valid_moves_side = self.board.all_valid_moves(side)
         if valid_moves_side == []:
-            if Board.king_safe(Board.find_king(side), side):
+            if self.board.king_safe(self.board.find_king(side), side):
                 return 0
             else:
+                print("ahh")
                 if side:
                     return float("inf")
                 else:
                     return -float("inf")
         elif depth == 0:
-            return self.check_position(Board)
+            return self.check_position()
         if side:
             minimum_evaluation = float("inf")
             for move in valid_moves_side:
-                simulated_board = copy.deepcopy(Board)
                 if len(move) == 2:
-                    simulated_board.move(move[0], move[1])
+                    self.board.move(move[0], move[1])
                 else:
-                    simulated_board.move(move[0], move[1], promo = move[2])
-                evaluation = self.minimax(simulated_board, depth-1, not side, alpha, beta)
+                    self.board.move(move[0], move[1], promo = move[2])
+                evaluation = self.minimax(depth-1, not side, alpha, beta)
                 minimum_evaluation = min(evaluation, minimum_evaluation)
                 beta = min(beta, evaluation)
+                self.board.unmove()
                 if beta <= alpha:
                     break
             return minimum_evaluation
         else:
             maximum_evaluation = -float("inf")
             for move in valid_moves_side:
-                simulated_board = copy.deepcopy(Board)
                 if len(move) == 2:
-                    simulated_board.move(move[0], move[1])
+                    self.board.move(move[0], move[1])
                 else:
-                    simulated_board.move(move[0], move[1], promo = move[2])
-                evaluation = self.minimax(simulated_board, depth-1, not side, alpha, beta)
+                    self.board.move(move[0], move[1], promo = move[2])
+                evaluation = self.minimax(depth-1, not side, alpha, beta)
                 maximum_evaluation = max(evaluation, maximum_evaluation)
                 alpha = max(alpha, evaluation)
+                self.board.unmove()
                 if beta <= alpha:
                     break
             return maximum_evaluation

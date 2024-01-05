@@ -1,5 +1,4 @@
 from piece import Piece
-import copy
 
 #Squares
 A1 = (7, 0)
@@ -95,27 +94,25 @@ class Board:
     #moves list
     self.history = []
   #king_safe(sqare) function
-  def king_safe(self, square, color, board = []):
-    if board == []:
-      board  = self.board
+  def king_safe(self, square, color):
     safe = True
   #takes square of king and checks if the king would be in check on that square
     #check for knights of opposite color
     knight_offsets = [(1,2),(2,1),(1,-2),(2,-1),(-1,2),(-2,1),(-1,-2),(-2,-1)]
     for offset in knight_offsets:
       if square[0] + offset[0] <=7 and square[0] + offset[0] >=0 and square[1] + offset[1] <=7 and square[1] + offset[1] >=0:
-        if board[square[0] + offset[0]][square[1] + offset[1]] != None:
-          if board[square[0] + offset[0]][square[1] + offset[1]].color != color and board[square[0] + offset[0]][square[1] + offset[1]].type == "N":
+        if self.board[square[0] + offset[0]][square[1] + offset[1]] != None:
+          if self.board[square[0] + offset[0]][square[1] + offset[1]].color != color and self.board[square[0] + offset[0]][square[1] + offset[1]].type == "N":
             return False
 
     #check horizontal and vertical lines for opposite color rooks or queens
     for rank in range(0,8):
-      if board[rank][square[1]] != None:
-        if board[rank][square[1]].color != color and (board[rank][square[1]].type == "R" or board[rank][square[1]].type == "Q"):
+      if self.board[rank][square[1]] != None:
+        if self.board[rank][square[1]].color != color and (self.board[rank][square[1]].type == "R" or self.board[rank][square[1]].type == "Q"):
           none, ran = True, False
           for rankgap in range(min(square[0],rank)+1,max(square[0],rank)):
             ran = True
-            if board[rankgap][square[1]] != None:
+            if self.board[rankgap][square[1]] != None:
              none = False
           if none and ran:
             return False
@@ -123,12 +120,12 @@ class Board:
             return False
 
     for file in range(0,8):
-      if board[square[0]][file] != None:
-        if board[square[0]][file].color != color and (board[square[0]][file].type == "R" or board[square[0]][file].type == "Q"):
+      if self.board[square[0]][file] != None:
+        if self.board[square[0]][file].color != color and (self.board[square[0]][file].type == "R" or self.board[square[0]][file].type == "Q"):
           none, ran = True, False
           for filegap in range(min(square[1],file)+1,max(square[1],file)):
             ran = True
-            if board[square[0]][filegap] != None:
+            if self.board[square[0]][filegap] != None:
              none = False
           if none and ran:
             return False
@@ -143,7 +140,7 @@ class Board:
 
     for offset in diagonal1offsets:
       if square[0] + offset[0] <=7 and square[0] + offset[0] >=0 and square[1] + offset[1] <=7 and square[1] + offset[1] >=0:
-        diagonal1.append(board[square[0] + offset[0]][square[1] + offset[1]])
+        diagonal1.append(self.board[square[0] + offset[0]][square[1] + offset[1]])
         if offset == (0,0):
           kingpos1 = len(diagonal1)-1
     for piece in range(len(diagonal1)):
@@ -161,7 +158,7 @@ class Board:
 
     for offset in diagonal2offsets:
       if square[0] + offset[0] <=7 and square[0] + offset[0] >=0 and square[1] + offset[1] <=7 and square[1] + offset[1] >=0:
-        diagonal2.append(board[square[0] + offset[0]][square[1] + offset[1]])
+        diagonal2.append(self.board[square[0] + offset[0]][square[1] + offset[1]])
         if offset == (0,0):
           kingpos2 = len(diagonal2)-1
     for piece in range(len(diagonal2)):
@@ -182,8 +179,8 @@ class Board:
 
     for offset in kingoffsets:
       if square[0] + offset[0] <=7 and square[0] + offset[0] >=0 and square[1] + offset[1] <=7 and square[1] + offset[1] >= 0:
-        if board[square[0] + offset[0]][square[1] + offset[1]] != None:
-          if board[square[0] + offset[0]][square[1] + offset[1]].color != color and board[square[0] + offset[0]][square[1] + offset[1]].type == "K":
+        if self.board[square[0] + offset[0]][square[1] + offset[1]] != None:
+          if self.board[square[0] + offset[0]][square[1] + offset[1]].color != color and self.board[square[0] + offset[0]][square[1] + offset[1]].type == "K":
             return False
 
     #check for pawns 
@@ -194,8 +191,8 @@ class Board:
 
     for offset in pawnoffsets:
       if square[0] + offset[0] <=7 and square[0] + offset[0] >=0 and square[1] + offset[1] <=7:
-        if board[square[0] + offset[0]][square[1] + offset[1]] != None:
-          if board[square[0] + offset[0]][square[1] + offset[1]].color != color and board[square[0] + offset[0]][square[1] + offset[1]].type == "P":
+        if self.board[square[0] + offset[0]][square[1] + offset[1]] != None:
+          if self.board[square[0] + offset[0]][square[1] + offset[1]].color != color and self.board[square[0] + offset[0]][square[1] + offset[1]].type == "P":
             return False
 
     return safe
@@ -236,10 +233,11 @@ class Board:
               line.append(self.board[i][currsquare[1]])
         if line.count(None)<len(line):
           return False
-        # creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
-        board_copy = copy.deepcopy(self.board)
-        self.move(currsquare, endsquare, board_copy)
-        return self.king_safe(self.find_king(color, board_copy), color, board_copy)
+        # checks if the king would be safe after move
+        self.move(currsquare, endsquare)
+        safe =  self.king_safe(self.find_king(color), color)
+        self.unmove()
+        return safe
       else:
         return False
     #runs for Knights
@@ -247,10 +245,11 @@ class Board:
       knight_offsets = [(1,2),(2,1),(1,-2),(2,-1),(-1,2),(-2,1),(-1,-2),(-2,-1)]
       #runs if the end square for the knight is somewhere a knight would go
       if knight_offsets.count((endsquare[0]-currsquare[0],endsquare[1]-currsquare[1])) == 1:
-        #creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
-        board_copy = copy.deepcopy(self.board)
-        self.move(currsquare, endsquare, board_copy)
-        return self.king_safe(self.find_king(color, board_copy) ,color, board_copy)
+        # checks if the king would be safe after move
+        self.move(currsquare, endsquare)
+        safe =  self.king_safe(self.find_king(color), color)
+        self.unmove()
+        return safe
       else:
         return False
     #runs for bishops
@@ -274,10 +273,11 @@ class Board:
         if line.count(None) < len(line):
           return False
 
-        # creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
-        board_copy = copy.deepcopy(self.board)
-        self.move(currsquare, endsquare, board_copy)
-        return self.king_safe(self.find_king(color, board_copy), color, board_copy)
+        # checks if the king would be safe after move
+        self.move(currsquare, endsquare)
+        safe =  self.king_safe(self.find_king(color), color)
+        self.unmove()
+        return safe
       else:
         return False
     elif self.board[currsquare[0]][currsquare[1]].type == "Q":
@@ -315,10 +315,11 @@ class Board:
         if line.count(None) < len(line):
           return False
 
-        # creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
-        board_copy = copy.deepcopy(self.board)
-        self.move(currsquare, endsquare, board_copy)
-        return self.king_safe(self.find_king(color, board_copy), color, board_copy)
+        # checks if the king would be safe after move
+        self.move(currsquare, endsquare)
+        safe =  self.king_safe(self.find_king(color), color)
+        self.unmove()
+        return safe
       else:
         return False
     elif self.board[currsquare[0]][currsquare[1]].type == "K":
@@ -327,10 +328,11 @@ class Board:
       if color:
         # runs if the end square for the king is somewhere a king would go, doesn't matter if it's off the board as that has been dealt with above
         if king_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
-          # creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
-          board_copy = copy.deepcopy(self.board)
-          self.move(currsquare, endsquare, board_copy)
-          return self.king_safe(self.find_king(color, board_copy), color, board_copy)
+          # checks if the king would be safe after move
+          self.move(currsquare, endsquare)
+          safe =  self.king_safe(self.find_king(color), color)
+          self.unmove()
+          return safe
         elif endsquare == G8 and currsquare == E8 and self.board[0][6] == None and self.board[0][5] == None:
           if self.board[0][7] != None:
             return self.king_safe(E8, color) and self.king_safe(F8, color) and self.king_safe(G8, color) and (not self.king_moved(color)) and (not self.rook_moved(color, H8)) and self.board[0][7].type == "R" and self.board[0][7].color == color
@@ -344,10 +346,11 @@ class Board:
 
         # runs if the end square for the king is somewhere a king would go, doesn't matter if it's off the board as that has been dealt with above
         if king_offsets.count((endsquare[0] - currsquare[0], endsquare[1] - currsquare[1])) == 1:
-          # creates a copy of the board and plays the move to check if the the king of the player would be safe after the move
-          board_copy = copy.deepcopy(self.board)
-          self.move(currsquare, endsquare, board_copy)
-          return self.king_safe(self.find_king(color, board_copy), color, board_copy)
+          # checks if the king would be safe after move
+          self.move(currsquare, endsquare)
+          safe =  self.king_safe(self.find_king(color), color)
+          self.unmove()
+          return safe
         elif endsquare == G1 and currsquare == E1 and self.board[7][6] == None and self.board[7][5] == None:
           if self.board[7][7]:
             return self.king_safe(E1, color) and self.king_safe(F1, color) and self.king_safe(G1, color) and (not self.king_moved(color)) and (not self.rook_moved(color, H1)) and self.board[7][7].type == "R" and self.board[7][7].color == color
@@ -362,24 +365,32 @@ class Board:
           return False
       if color:
         if endsquare[0] == currsquare[0]+1 and endsquare[1] == currsquare[1] and self.board[endsquare[0]][endsquare[1]] == None:
-          board_copy = copy.deepcopy(self.board)
-          self.move(currsquare, endsquare, board_copy)
-          return self.king_safe(self.find_king(color, board_copy), color, board_copy)
+          # checks if the king would be safe after move
+          self.move(currsquare, endsquare)
+          safe =  self.king_safe(self.find_king(color), color)
+          self.unmove()
+          return safe
         elif endsquare[0] == currsquare[0]+2 and endsquare[1] == currsquare[1] and currsquare[0] == 1 and self.board[currsquare[0]+1][currsquare[1]] == None and self.board[endsquare[0]][endsquare[1]] == None:
-          board_copy = copy.deepcopy(self.board)
-          self.move(currsquare, endsquare, board_copy)
-          return self.king_safe(self.find_king(color, board_copy), color, board_copy)
+          # checks if the king would be safe after move
+          self.move(currsquare, endsquare)
+          safe =  self.king_safe(self.find_king(color), color)
+          self.unmove()
+          return safe
         elif endsquare[0] == currsquare[0]+1 and (endsquare[1] == currsquare[1]+1 or endsquare[1] == currsquare[1]-1):
           if self.board[endsquare[0]][endsquare[1]] != None:
             if self.board[endsquare[0]][endsquare[1]].color != color:
-              board_copy = copy.deepcopy(self.board)
-              self.move(currsquare, endsquare, board_copy)
-              return self.king_safe(self.find_king(color, board_copy), color, board_copy)
+              # checks if the king would be safe after move
+              self.move(currsquare, endsquare)
+              safe =  self.king_safe(self.find_king(color), color)
+              self.unmove()
+              return safe
           elif len(self.history) > 0:
             if self.history[len(self.history)-1][2].type == "P" and self.history[len(self.history)-1][0][0] == 6 and self.history[len(self.history)-1][1][0] == 4 and self.history[len(self.history)-1][2].color != color and currsquare[0] == 4 and self.history[len(self.history)-1][0][1] == endsquare[1]:
-              board_copy = copy.deepcopy(self.board)
-              self.move(currsquare, endsquare, board_copy)
-              return self.king_safe(self.find_king(color, board_copy), color, board_copy)
+              # checks if the king would be safe after move
+              self.move(currsquare, endsquare)
+              safe =  self.king_safe(self.find_king(color), color)
+              self.unmove()
+              return safe
             else:
               return False
           else:
@@ -388,24 +399,32 @@ class Board:
           return False
       else:
         if endsquare[0] == currsquare[0]-1 and endsquare[1] == currsquare[1] and self.board[endsquare[0]][endsquare[1]] == None:
-          board_copy = copy.deepcopy(self.board)
-          self.move(currsquare, endsquare, board_copy)
-          return self.king_safe(self.find_king(color, board_copy), color, board_copy)
+          # checks if the king would be safe after move
+          self.move(currsquare, endsquare)
+          safe =  self.king_safe(self.find_king(color), color)
+          self.unmove()
+          return safe
         elif endsquare[0] == currsquare[0]-2 and endsquare[1] == currsquare[1] and currsquare[0] == 6 and self.board[currsquare[0]-1][currsquare[1]] == None and self.board[endsquare[0]][endsquare[1]] == None:
-          board_copy = copy.deepcopy(self.board)
-          self.move(currsquare, endsquare, board_copy)
-          return self.king_safe(self.find_king(color, board_copy), color, board_copy)
+          # checks if the king would be safe after move
+          self.move(currsquare, endsquare)
+          safe =  self.king_safe(self.find_king(color), color)
+          self.unmove()
+          return safe
         elif endsquare[0] == currsquare[0]-1 and (endsquare[1] == currsquare[1]+1 or endsquare[1] == currsquare[1]-1):
           if self.board[endsquare[0]][endsquare[1]] != None:
             if self.board[endsquare[0]][endsquare[1]].color != color:
-              board_copy = copy.deepcopy(self.board)
-              self.move(currsquare, endsquare, board_copy)
-              return self.king_safe(self.find_king(color, board_copy), color, board_copy)
+              # checks if the king would be safe after move
+              self.move(currsquare, endsquare)
+              safe =  self.king_safe(self.find_king(color), color)
+              self.unmove()
+              return safe
           elif len(self.history) > 0:
             if self.history[len(self.history)-1][2].type == "P" and self.history[len(self.history)-1][0][0] == 1 and self.history[len(self.history)-1][1][0] == 3 and self.history[len(self.history)-1][2].color != color and currsquare[0] == 3 and self.history[len(self.history)-1][0][1] == endsquare[1]:
-              board_copy = copy.deepcopy(self.board)
-              self.move(currsquare, endsquare, board_copy)
-              return self.king_safe(self.find_king(color, board_copy), color, board_copy)
+              # checks if the king would be safe after move
+              self.move(currsquare, endsquare)
+              safe =  self.king_safe(self.find_king(color), color)
+              self.unmove()
+              return safe
             else:
               return False
           else:
@@ -417,56 +436,96 @@ class Board:
     #is a same color col in the way?
     #for castles - has the king or the rook in question moved and is there anything blocking the path(king_safe(square) function)
   #move function
-  def move(self, currsquare, endsquare, board = [], promo = "P"):
-    log_move = board == []
-    if board == []:
-      board = self.board
-    color = board[currsquare[0]][currsquare[1]].color
+  def move(self, currsquare, endsquare, promo = "P"):
+    #movetype 0-normal 1-capture 2-en passant 3-promotion 4-castle
+    movetype = 0
+    captured_piece = None
+    if self.board[endsquare[0]][endsquare[1]] != None:
+      movetype = 1
+      captured_piece = self.find_square(endsquare)
+    color = self.board[currsquare[0]][currsquare[1]].color
     piece  = self.board[currsquare[0]][currsquare[1]]
     if piece.type == "K":
       if abs(currsquare[1] - endsquare[1]) == 2:
+        movetype = 4
         if color:
           if endsquare == G8:
-            self.move(H8, F8, board=self.board)
+            self.board[F8[0]][F8[1]] = self.find_square(H8)
+            self.board[H8[0]][H8[1]] = None
           elif endsquare == C8:
-            self.move(A8, D8, board=self.board)
+            self.board[D8[0]][D8[1]] = self.find_square(A8)
+            self.board[A8[0]][A8[1]] = None
         else:
           if endsquare == G1:
-            self.move(H1, F1, board=self.board)
+            self.board[F1[0]][F1[1]] = self.find_square(H1)
+            self.board[H1[0]][H1[1]] = None
           elif endsquare == C1:
-            self.move(A1, D1, board=self.board)
+            self.board[D1[0]][D1[1]] = self.find_square(A1)
+            self.board[A1[0]][A1[1]] = None
 
-    if abs(endsquare[1] - currsquare[1]) == 1 and self.board[endsquare[0]][endsquare[1]] == None and piece.type == "P" and log_move:
+    if abs(endsquare[1] - currsquare[1]) == 1 and self.board[endsquare[0]][endsquare[1]] == None and piece.type == "P":
+      movetype = 2
       if color:
+        captured_piece = self.board[endsquare[0] - 1][endsquare[1]]
         self.board[endsquare[0] - 1][endsquare[1]] = None
       else:
+        captured_piece = self.board[endsquare[0] + 1][endsquare[1]]
         self.board[endsquare[0] + 1][endsquare[1]] = None
 
-    board[endsquare[0]][endsquare[1]] = board[currsquare[0]][currsquare[1]]
-    board[currsquare[0]][currsquare[1]] = None
+    self.board[endsquare[0]][endsquare[1]] = self.board[currsquare[0]][currsquare[1]]
+    self.board[currsquare[0]][currsquare[1]] = None
     if piece.type == "P":
       if color:
         if endsquare[0] == 7:
-          board[endsquare[0]][endsquare[1]].type = promo
+          movetype = 3
+          self.board[endsquare[0]][endsquare[1]].type = promo
       else:
         if endsquare[0] == 0:
-          board[endsquare[0]][endsquare[1]].type = promo
+          movetype = 3
+          self.board[endsquare[0]][endsquare[1]].type = promo
 
-    if log_move:
+    self.turn = not self.turn
+    self.history.append([currsquare, endsquare, piece, captured_piece, movetype])
+  
+  def unmove(self):
+    if len(self.history)>0:
+      move = self.history.pop()
       self.turn = not self.turn
-      if self.king_safe(self.find_king(not color), not color):
-        self.history.append([currsquare, endsquare, piece, 0])
-      else:
-        self.history.append([currsquare, endsquare, piece, 1])
-
+      if move[4] == 0 or move[4] == 3:
+        self.board[move[0][0]][move[0][1]] = move[2]
+        self.board[move[1][0]][move[1][1]] = None
+      elif move[4] == 1:
+        self.board[move[0][0]][move[0][1]] = move[2]
+        self.board[move[1][0]][move[1][1]] = move[3]
+      elif move[4] == 2:
+        self.board[move[0][0]][move[0][1]] = move[2]
+        self.board[move[1][0]][move[1][1]] = None
+        if move[2].color:
+          self.board[move[1][0]-1][move[1][1]] = move[3]
+        else:
+          self.board[move[1][0]+1][move[1][1]] = move[3]
+      elif move[4] == 4:
+        self.board[move[0][0]][move[0][1]] = move[2]
+        self.board[move[1][0]][move[1][1]] = None
+        if move[1] == G1:
+          self.board[H1[0]][H1[1]] = self.board[F1[0]][F1[1]]
+          self.board[F1[0]][F1[1]] = None
+        elif move[1] == G8:
+          self.board[H8[0]][H8[1]] = self.board[F8[0]][F8[1]]
+          self.board[F8[0]][F8[1]] = None
+        elif move[1] == C1:
+          self.board[A1[0]][A1[1]] = self.board[D1[0]][D1[1]]
+          self.board[D1[0]][D1[1]] = None
+        elif move[1] == C8:
+          self.board[A8[0]][A8[1]] = self.board[D8[0]][D8[1]]
+          self.board[D8[0]][D8[1]] = None
+        
   #find_king function
-  def find_king(self, color, board = []):
-    if board == []:
-      board = self.board
-    for rank in range(len(board)):
-      for square in range(len(board[rank])):
-        if board[rank][square]!=None:
-          if board[rank][square].color == color and board[rank][square].type == "K":
+  def find_king(self, color):
+    for rank in range(len(self.board)):
+      for square in range(len(self.board[rank])):
+        if self.board[rank][square]!=None:
+          if self.board[rank][square].color == color and self.board[rank][square].type == "K":
             return (rank, square)
             
   def king_moved(self, color):
