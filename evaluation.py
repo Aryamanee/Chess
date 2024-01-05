@@ -77,21 +77,20 @@ class eval():
 
     #https://www.youtube.com/watch?v=l-hh51ncgDI&ab_channel=SebastianLague - base minimax code
     def minimax(self, Board: board.Board, depth, side, alpha = -float("inf"), beta = float("inf")):
-        if Board.all_valid_moves(False) == []:
-            if Board.king_safe(Board.find_king(False), False):
+        valid_moves_side = Board.all_valid_moves(side)
+        if valid_moves_side == []:
+            if Board.king_safe(Board.find_king(side), side):
                 return 0
             else:
-                return -float("inf")
-        elif Board.all_valid_moves(True) == []:
-            if Board.king_safe(Board.find_king(True), True):
-                return 0
-            else:
-                return float("inf")
+                if side:
+                    return float("inf")
+                else:
+                    return -float("inf")
         elif depth == 0:
             return self.check_position(Board)
         if side:
             minimum_evaluation = float("inf")
-            for move in Board.all_valid_moves(side):
+            for move in valid_moves_side:
                 simulated_board = copy.deepcopy(Board)
                 if len(move) == 2:
                     simulated_board.move(move[0], move[1])
@@ -105,7 +104,7 @@ class eval():
             return minimum_evaluation
         else:
             maximum_evaluation = -float("inf")
-            for move in Board.all_valid_moves(side):
+            for move in valid_moves_side:
                 simulated_board = copy.deepcopy(Board)
                 if len(move) == 2:
                     simulated_board.move(move[0], move[1])

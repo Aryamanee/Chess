@@ -538,6 +538,9 @@ class Board:
     for square in squares:
       move_piece = self.valid_moves(square)
       for move in move_piece:
+          movetype = 0
+          if self.find_square(move) != None:
+            movetype = 1
           if self.board[square[0]][square[1]].type == "P" and square[0] == 6 and side:
             promos = ["Q", "R", "N", "B"]
             for promo in promos:
