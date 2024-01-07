@@ -608,7 +608,7 @@ class Board:
           if self.board[square[0]][square[1]].type == "P" and square[0] == 6 and side:
             promos = ["Q", "R", "N", "B"]
             for promo in promos:
-              moves.append((square, move, promo))
+              moves.append((square, move, movetype, promo))
           elif self.board[square[0]][square[1]].type == "P" and square[0] == 1 and not side:
             promos = ["Q", "R", "N", "B"]
             for promo in promos:

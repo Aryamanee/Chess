@@ -138,8 +138,13 @@ def game(turn = False, time_control = (-1, -1), position = "rnbqkbnr/pppppppp/8/
                         gameboard.move(selected, mousesquare)
                       selected = None
             else:
-              best_move = eval.find_best_move(5)
-              gameboard.move(best_move[0], best_move[1])
+              if gameboard.turn:
+                best_move = eval.find_best_move(3)
+                if len(best_move) == 3:
+                  gameboard.move(best_move[0], best_move[1])
+                else:
+                  gameboard.move(best_move[0], best_move[1], best_move[3])
+
 
     for i in range(8):
       for j in range(8):
@@ -225,4 +230,4 @@ def game(turn = False, time_control = (-1, -1), position = "rnbqkbnr/pppppppp/8/
     clock.tick(60)
 
 if __name__ == "__main__":
-  game(False, position="2r2b1r/p2k1pp1/8/Q2pP3/5q2/7p/PP3P1P/2R2K2")
+  game()
