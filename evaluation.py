@@ -66,6 +66,60 @@ class eval():
     # checks for forced check sequences in the next 4 moves that may end in a checkmate
     # uses these factors to determine a number that represents if the game is in blacks favor or whites favor
     # find best_move function
+    def find_best_move(self, depth):
+        alpha = -float("inf")
+        beta = float("inf")
+        best_move = None
+        side = self.board.turn
+        valid_moves_side = self.board.all_valid_moves(side)
+        if valid_moves_side == []:
+            if self.board.king_safe(self.board.find_king(side), side):
+                return best_move
+            else:
+                if side:
+                    return best_move
+                else:
+                    return best_move
+        elif depth == 0:
+            return best_move
+        if side:
+            minimum_evaluation = float("inf")
+            valid_moves_side.sort(key = lambda x: x[2], reverse = True)
+            for move in valid_moves_side:
+                if len(move) == 3:
+                    self.board.move(move[0], move[1])
+                else:
+                    self.board.move(move[0], move[1], promo = move[3])
+                evaluation = self.minimax(depth-1, not side, alpha, beta)
+                if evaluation<=minimum_evaluation:
+                    minimum_evaluation = evaluation
+                    best_move = move
+                self.board.unmove()
+                if evaluation == -float("inf"):
+                    return best_move
+                beta = min(beta, evaluation)
+                if beta <= alpha:
+                    break
+            return best_move
+        else:
+            maximum_evaluation = -float("inf")
+            valid_moves_side.sort(key = lambda x: x[2], reverse = True)
+            for move in valid_moves_side:
+                if len(move) == 3:
+                    self.board.move(move[0], move[1])
+                else:
+                    self.board.move(move[0], move[1], promo = move[3])
+                evaluation = self.minimax(depth-1, not side, alpha, beta)
+                if evaluation>=maximum_evaluation:
+                    maximum_evaluation = evaluation
+                    best_move = move
+                self.board.unmove()
+                if evaluation == float("inf"):
+                    return best_move
+                alpha = max(alpha, evaluation)
+                if beta <= alpha:
+                    break
+            return best_move
     # uses all_valid_move function of board and runs on a temporary board
     # evaluates each new temporary board and ranks it using check_position function
     # returns move with highest rating
@@ -77,7 +131,6 @@ class eval():
             if self.board.king_safe(self.board.find_king(side), side):
                 return 0
             else:
-                print("ahh")
                 if side:
                     return float("inf")
                 else:
@@ -86,11 +139,12 @@ class eval():
             return self.check_position()
         if side:
             minimum_evaluation = float("inf")
+            valid_moves_side.sort(key = lambda x: x[2], reverse = True)
             for move in valid_moves_side:
-                if len(move) == 2:
+                if len(move) == 3:
                     self.board.move(move[0], move[1])
                 else:
-                    self.board.move(move[0], move[1], promo = move[2])
+                    self.board.move(move[0], move[1], promo = move[3])
                 evaluation = self.minimax(depth-1, not side, alpha, beta)
                 minimum_evaluation = min(evaluation, minimum_evaluation)
                 beta = min(beta, evaluation)
@@ -100,11 +154,12 @@ class eval():
             return minimum_evaluation
         else:
             maximum_evaluation = -float("inf")
+            valid_moves_side.sort(key = lambda x: x[2], reverse = True)
             for move in valid_moves_side:
-                if len(move) == 2:
+                if len(move) == 3:
                     self.board.move(move[0], move[1])
                 else:
-                    self.board.move(move[0], move[1], promo = move[2])
+                    self.board.move(move[0], move[1], promo = move[3])
                 evaluation = self.minimax(depth-1, not side, alpha, beta)
                 maximum_evaluation = max(evaluation, maximum_evaluation)
                 alpha = max(alpha, evaluation)

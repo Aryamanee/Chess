@@ -55,9 +55,9 @@ def promote(side, time_control, time_w, time_b):
 
     pygame.display.flip()
     clock.tick(60)
-def game(turn = False, time_control = (-1, -1)):
-  gameboard = board.Board(turn = turn)
-  #eval = evaluation.eval(gameboard)
+def game(turn = False, time_control = (-1, -1), position = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"):
+  gameboard = board.Board(turn = turn, position=position)
+  eval = evaluation.eval(gameboard)
   font = pygame.font.Font('freesansbold.ttf', 32)
   running = True
   selected = None
@@ -66,7 +66,7 @@ def game(turn = False, time_control = (-1, -1)):
   pygame.time.set_timer(0, 1000)
   while running:
     screen.fill((250, 247, 246))
-    """if gameboard.all_valid_moves(False) == []:
+    if gameboard.all_valid_moves(False) == []:
       if gameboard.king_safe(gameboard.find_king(False), False):
         print("Stalemate")
       else:
@@ -75,17 +75,15 @@ def game(turn = False, time_control = (-1, -1)):
       if gameboard.king_safe(gameboard.find_king(True), True):
         print("Stalemate")
       else:
-        print("White Wins!")"""
+        print("White Wins!")
     for event in pygame.event.get():
           if event.type == pygame.QUIT:
               running = False
           elif event.type == 0 and time_control != (-1, -1):
             if gameboard.turn:
               time_b -= 1
-              print(datetime.timedelta(seconds = time_b))
             else:
               time_w -= 1
-              print(datetime.timedelta(seconds = time_w))
           elif event.type == pygame.MOUSEBUTTONDOWN:
             mousepos = pygame.mouse.get_pos()
             mousesquare = (mousepos[1]//75, mousepos[0]//75)
@@ -140,7 +138,8 @@ def game(turn = False, time_control = (-1, -1)):
                         gameboard.move(selected, mousesquare)
                       selected = None
             else:
-              gameboard.unmove()
+              best_move = eval.find_best_move(5)
+              gameboard.move(best_move[0], best_move[1])
 
     for i in range(8):
       for j in range(8):
@@ -171,7 +170,7 @@ def game(turn = False, time_control = (-1, -1)):
               piece = piece_b
             elif gameboard.board[rank][file].type == "K":
               piece = piece_k
-              #check = not gameboard.king_safe(gameboard.find_king(True), True)
+              check = not gameboard.king_safe(gameboard.find_king(True), True)
             elif gameboard.board[rank][file].type == "N":
               piece = piece_n
             elif gameboard.board[rank][file].type == "P":
@@ -185,7 +184,7 @@ def game(turn = False, time_control = (-1, -1)):
               piece = piece_B
             elif gameboard.board[rank][file].type == "K":
               piece = piece_K
-              #check = not gameboard.king_safe(gameboard.find_king(False), False)
+              check = not gameboard.king_safe(gameboard.find_king(False), False)
             elif gameboard.board[rank][file].type == "N":
               piece = piece_N
             elif gameboard.board[rank][file].type == "P":
@@ -226,4 +225,4 @@ def game(turn = False, time_control = (-1, -1)):
     clock.tick(60)
 
 if __name__ == "__main__":
-  game()
+  game(False, position="2r2b1r/p2k1pp1/8/Q2pP3/5q2/7p/PP3P1P/2R2K2")

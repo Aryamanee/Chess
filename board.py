@@ -210,6 +210,8 @@ class Board:
     if self.board[endsquare[0]][endsquare[1]] != None:
       if self.board[endsquare[0]][endsquare[1]].color == color:
         return False
+      elif self.find_square(endsquare).type == "K":
+        return False
     #runs for different types of pieces
     #this one for rooks
     if self.board[currsquare[0]][currsquare[1]].type == "R":
@@ -439,12 +441,11 @@ class Board:
   def move(self, currsquare, endsquare, promo = "P"):
     #movetype 0-normal 1-capture 2-en passant 3-promotion 4-castle
     movetype = 0
-    captured_piece = None
+    captured_piece = captured_piece = self.find_square(endsquare)
     if self.board[endsquare[0]][endsquare[1]] != None:
       movetype = 1
-      captured_piece = self.find_square(endsquare)
-    color = self.board[currsquare[0]][currsquare[1]].color
-    piece  = self.board[currsquare[0]][currsquare[1]]
+    color = self.find_square(currsquare).color
+    piece  = Piece(self.board[currsquare[0]][currsquare[1]].type, self.board[currsquare[0]][currsquare[1]].color)
     if piece.type == "K":
       if abs(currsquare[1] - endsquare[1]) == 2:
         movetype = 4
@@ -493,7 +494,7 @@ class Board:
       self.turn = not self.turn
       if move[4] == 0 or move[4] == 3:
         self.board[move[0][0]][move[0][1]] = move[2]
-        self.board[move[1][0]][move[1][1]] = None
+        self.board[move[1][0]][move[1][1]] = move[3]
       elif move[4] == 1:
         self.board[move[0][0]][move[0][1]] = move[2]
         self.board[move[1][0]][move[1][1]] = move[3]
@@ -600,6 +601,10 @@ class Board:
           movetype = 0
           if self.find_square(move) != None:
             movetype = 1
+          self.move(square, move)
+          if not self.king_safe(self.find_king(not side), not side):
+            movetype = 2
+          self.unmove()
           if self.board[square[0]][square[1]].type == "P" and square[0] == 6 and side:
             promos = ["Q", "R", "N", "B"]
             for promo in promos:
@@ -607,9 +612,9 @@ class Board:
           elif self.board[square[0]][square[1]].type == "P" and square[0] == 1 and not side:
             promos = ["Q", "R", "N", "B"]
             for promo in promos:
-              moves.append((square, move, promo))
+              moves.append((square, move, movetype, promo))
           else:
-            moves.append((square, move))
+            moves.append((square, move, movetype))
     return moves
   
   def material(self):
