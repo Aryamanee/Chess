@@ -2,6 +2,7 @@ import board
 import pygame
 import datetime
 import evaluation
+import threading
 
 piece_B = pygame.image.load("assets/pieces/white-bishop.png")
 piece_K = pygame.image.load("assets/pieces/white-king.png")
@@ -18,7 +19,7 @@ piece_r = pygame.image.load("assets/pieces/black-rook.png")
 
 def main(turn = False, time_control = (-1, -1)):
     pygame.init()
-    screen = pygame.display.set_mode((800, 600))
+    screen = pygame.display.set_mode((800, 600), flags=pygame.RESIZABLE)
     clock = pygame.time.Clock()
     game(screen, clock, turn, time_control)
 
@@ -141,12 +142,7 @@ def game(screen, clock, turn = False, time_control = (-1, -1), position = "rnbqk
                       selected = None
             else:
               if gameboard.turn:
-                best_move = eval.find_best_move(3)
-                if len(best_move) == 3:
-                  gameboard.move(best_move[0], best_move[1])
-                else:
-                  gameboard.move(best_move[0], best_move[1], best_move[3])
-
+                threading.Thread(target=eval.play_best_move, args=[3])
 
     for i in range(8):
       for j in range(8):
