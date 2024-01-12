@@ -23,18 +23,18 @@ class eval():
         phase =  (development_white + development_black)+78-pieces_white-pieces_black
         if phase < midgamethreshold:
             center_control_weight = 1
-            king_saftey_weight = 0.2
-            square_control_weight = 0.1
+            king_saftey_weight = 0.1
+            square_control_weight = 0.05
             material_advantage_weight = 1
         elif phase < endgamethreshold:
             center_control_weight = 1
-            king_saftey_weight = 0.2
-            square_control_weight = 0.1
+            king_saftey_weight = 0.1
+            square_control_weight = 0.05
             material_advantage_weight = 1
         else:
             center_control_weight = 1
             king_saftey_weight = 0.1
-            square_control_weight = 1
+            square_control_weight = 0.05
             material_advantage_weight = 1
         return (king_safety_white - king_safety_black)*king_saftey_weight + (control_white - control_black)*square_control_weight + (pieces_white - pieces_black)*material_advantage_weight
     def king_safety(self, side):
@@ -124,7 +124,7 @@ class eval():
     # evaluates each new temporary board and ranks it using check_position function
     # returns move with highest rating
 
-    #https://www.youtube.com/watch?v=l-hh51ncgDI&ab_channel=SebastianLague - base minimax code
+    #https://www.youtube.com/watch?v=l-hh51ncgDI&ab_channel=SebastianLague - minimax psuedocode
     def minimax(self, depth, side, alpha = -float("inf"), beta = float("inf")):
         valid_moves_side = self.board.all_valid_moves(side)
         if valid_moves_side == []:
