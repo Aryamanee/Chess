@@ -73,6 +73,7 @@ class Board:
     #set time control
     #set board
     self.board = []
+    self.dont_render = False
     self.find_square = lambda pos: self.board[pos[0]][pos[1]]
     self.turn = turn
     lines = position.split("/")
@@ -584,7 +585,7 @@ class Board:
           newsquare = (square[0] + offset[0], square[1] + offset[1])
           if self.is_valid_move(square, newsquare):
             moves.append(newsquare)
-      return moves
+    return moves
 #all_valid_moves(side)
   #returns all valid moves for all pieces for the side provided
   def all_valid_moves(self, side):

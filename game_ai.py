@@ -113,7 +113,7 @@ def game(screen, clock, turn = False, time_control = (-1, -1), position = "rnbqk
                       gameboard.move(selected, mousesquare)
                     selected = None
               else:
-                if gameboard.board[mousesquare[0]][mousesquare[1]].color == gameboard.turn:
+                if gameboard.board[mousesquare[0]][mousesquare[1]].color == False and gameboard.turn==False:
                   if mousesquare == selected:
                     selected = None
                   else:
@@ -141,63 +141,65 @@ def game(screen, clock, turn = False, time_control = (-1, -1), position = "rnbqk
                         gameboard.move(selected, mousesquare)
                       selected = None
             else:
-              pass
-
-    for i in range(8):
-      for j in range(8):
-        if i%2==0 and j%2 == 0:
-           color = (204, 183, 174)
-        elif i%2 == 0 and j%2 != 0:
-           color = (112, 102, 119)
-        elif i%2 != 0 and j%2 == 0:
-           color = (112, 102, 119)
-        else:
-           color = (204, 183, 174)
-        pygame.draw.rect(screen, color, (75*i, 75*j, 75, 75))
-    if selected != None:
-      squares = gameboard.valid_moves(selected)
-    else:
-      squares = []
-    for square in squares:
-      if gameboard.board[square[0]][square[1]] == None:
-        pygame.draw.rect(screen, (0, 255, 0), (square[1]*75+25, square[0]*75+25, 25, 25))
-      else:
-        pygame.draw.rect(screen, (0, 255, 0), (square[1]*75, square[0]*75, 75, 75), width = 5)
-    for rank in range(8):
-      for file in range(8):
-        check = False
-        if gameboard.board[rank][file] != None:
-          if gameboard.board[rank][file].color:
-            if gameboard.board[rank][file].type == "B":
-              piece = piece_b
-            elif gameboard.board[rank][file].type == "K":
-              piece = piece_k
-              check = not gameboard.king_safe(gameboard.find_king(True), True)
-            elif gameboard.board[rank][file].type == "N":
-              piece = piece_n
-            elif gameboard.board[rank][file].type == "P":
-              piece = piece_p
-            elif gameboard.board[rank][file].type == "Q":
-              piece = piece_q
-            elif gameboard.board[rank][file].type == "R":
-              piece = piece_r
+              if gameboard.turn:
+                #eval.play_best_move(3)
+                threading.Thread(target=eval.play_best_move, args=[3]).start()
+    if not gameboard.dont_render or True:
+      for i in range(8):
+        for j in range(8):
+          if i%2==0 and j%2 == 0:
+            color = (204, 183, 174)
+          elif i%2 == 0 and j%2 != 0:
+            color = (112, 102, 119)
+          elif i%2 != 0 and j%2 == 0:
+            color = (112, 102, 119)
           else:
-            if gameboard.board[rank][file].type == "B":
-              piece = piece_B
-            elif gameboard.board[rank][file].type == "K":
-              piece = piece_K
-              check = not gameboard.king_safe(gameboard.find_king(False), False)
-            elif gameboard.board[rank][file].type == "N":
-              piece = piece_N
-            elif gameboard.board[rank][file].type == "P":
-              piece = piece_P
-            elif gameboard.board[rank][file].type == "Q":
-              piece = piece_Q
-            elif gameboard.board[rank][file].type == "R":
-              piece = piece_R
-          if check:
-            pygame.draw.rect(screen, (255, 0, 0), (75*file, 75*rank, 75, 75))
-          screen.blit(piece, (75*file, 75*rank))
+            color = (204, 183, 174)
+          pygame.draw.rect(screen, color, (75*i, 75*j, 75, 75))
+      if selected != None:
+        squares = gameboard.valid_moves(selected)
+      else:
+        squares = []
+      for square in squares:
+        if gameboard.board[square[0]][square[1]] == None:
+          pygame.draw.rect(screen, (0, 255, 0), (square[1]*75+25, square[0]*75+25, 25, 25))
+        else:
+          pygame.draw.rect(screen, (0, 255, 0), (square[1]*75, square[0]*75, 75, 75), width = 5)
+      for rank in range(8):
+        for file in range(8):
+          check = False
+          if gameboard.board[rank][file] != None:
+            if gameboard.board[rank][file].color:
+              if gameboard.board[rank][file].type == "B":
+                piece = piece_b
+              elif gameboard.board[rank][file].type == "K":
+                piece = piece_k
+                check = not gameboard.king_safe(gameboard.find_king(True), True)
+              elif gameboard.board[rank][file].type == "N":
+                piece = piece_n
+              elif gameboard.board[rank][file].type == "P":
+                piece = piece_p
+              elif gameboard.board[rank][file].type == "Q":
+                piece = piece_q
+              elif gameboard.board[rank][file].type == "R":
+                piece = piece_r
+            else:
+              if gameboard.board[rank][file].type == "B":
+                piece = piece_B
+              elif gameboard.board[rank][file].type == "K":
+                piece = piece_K
+                check = not gameboard.king_safe(gameboard.find_king(False), False)
+              elif gameboard.board[rank][file].type == "N":
+                piece = piece_N
+              elif gameboard.board[rank][file].type == "P":
+                piece = piece_P
+              elif gameboard.board[rank][file].type == "Q":
+                piece = piece_Q
+              elif gameboard.board[rank][file].type == "R":
+                piece = piece_R
+            if check:
+              pygame.draw.rect(screen, (255, 0, 0), (75*file, 75*rank, 75, 75))
+            screen.blit(piece, (75*file, 75*rank))
 
     #draw sidebar
     if not time_control == (-1, -1):
@@ -225,3 +227,5 @@ def game(screen, clock, turn = False, time_control = (-1, -1), position = "rnbqk
 
     pygame.display.flip()
     clock.tick(60)
+
+main()

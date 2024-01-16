@@ -1,8 +1,12 @@
-import board
-import evaluation
+import tkinter
+import tkinter.ttk
+import game
 
-Board = board.Board("1r3b1k/5Qp1/p6B/q1Pp4/2p5/5P1P/P1K2P2/3R2R1")
-Board.turn = True
-eval = evaluation.eval(Board)
+root = tkinter.Tk()
+def play():
+    root.destroy()
+    game.main()
+button = tkinter.ttk.Button(root, text="Play", command=play)
+button.pack()
+root.mainloop()
 
-print(eval.find_best_move(5))

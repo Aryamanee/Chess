@@ -1,4 +1,5 @@
 import board
+import os
 
 # Move Analyzer
 # takes current board situation and color of analyzing
@@ -67,11 +68,13 @@ class eval():
     # uses these factors to determine a number that represents if the game is in blacks favor or whites favor
     # find best_move function
     def play_best_move(self, depth):
-        best_move = self.find_best_move(self, depth)
+        self.board.dont_render = True
+        best_move = self.find_best_move(depth)
         if len(best_move) == 3:
             self.board.move(best_move[0], best_move[1])
         else:
             self.board.move(best_move[0], best_move[1], best_move[3])
+        self.board.dont_render = False
 
     def find_best_move(self, depth):
         alpha = -float("inf")
