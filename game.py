@@ -19,7 +19,7 @@ piece_r = pygame.image.load("assets/pieces/black-rook.png")
 
 def main(turn = False, time_control = (-1, -1)):
     pygame.init()
-    screen = pygame.display.set_mode((800, 600), flags=pygame.RESIZABLE)
+    screen = pygame.display.set_mode((1600, 1200), flags=pygame.RESIZABLE)
     clock = pygame.time.Clock()
     game(screen, clock, turn, time_control)
 

@@ -19,7 +19,7 @@ piece_r = pygame.image.load("assets/pieces/black-rook.png")
 
 def main(turn = False, time_control = (-1, -1)):
     pygame.init()
-    screen = pygame.display.set_mode((800, 600), flags=pygame.RESIZABLE)
+    screen = pygame.display.set_mode((800, 600))
     clock = pygame.time.Clock()
     game(screen, clock, turn, time_control)
 
@@ -141,9 +141,18 @@ def game(screen, clock, turn = False, time_control = (-1, -1), position = "rnbqk
                         gameboard.move(selected, mousesquare)
                       selected = None
             else:
-              if gameboard.turn:
-                #eval.play_best_move(3)
-                threading.Thread(target=eval.play_best_move, args=[3]).start()
+              if mousesquare[0] <4:
+                gameboard.unmove()
+              elif gameboard.turn:
+                if gameboard.num_pieces() >=12:
+                  eval.play_best_move(2)
+                elif gameboard.num_pieces() >=8:
+                  eval.play_best_move(3)
+                elif gameboard.num_pieces() >=4:
+                  eval.play_best_move(4)
+                else:
+                  eval.play_best_move(5)
+                #threading.Thread(target=eval.play_best_move, args=[2]).start()
     if not gameboard.dont_render or True:
       for i in range(8):
         for j in range(8):
@@ -220,10 +229,6 @@ def game(screen, clock, turn = False, time_control = (-1, -1), position = "rnbqk
       black_clock_rect.center = (700, 100)
       screen.blit(white_clock, white_clock_rect)
       screen.blit(black_clock, black_clock_rect)
-    #analysis = font.render(str(round(eval.check_position(), 3)), True, (0,0,0), (200, 200, 200))
-    #analysis_rect = analysis.get_rect()
-    #analysis_rect.center = (700, 300)
-    #screen.blit(analysis, analysis_rect)
 
     pygame.display.flip()
     clock.tick(60)

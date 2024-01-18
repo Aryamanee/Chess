@@ -191,11 +191,12 @@ class Board:
       pawnoffsets = [(-1, -1), (-1, 1)]
 
     for offset in pawnoffsets:
-      if square[0] + offset[0] <=7 and square[0] + offset[0] >=0 and square[1] + offset[1] <=7:
+      if square[0] + offset[0] <=7 and square[0] + offset[0] >=0 and square[1] + offset[1] <=7 and square[1] + offset[1] >=0:
         if self.board[square[0] + offset[0]][square[1] + offset[1]] != None:
           if self.board[square[0] + offset[0]][square[1] + offset[1]].color != color and self.board[square[0] + offset[0]][square[1] + offset[1]].type == "P":
+            print(self.board[square[0] + offset[0]][square[1] + offset[1]].type)
+            print(square, offset, (square[0]+offset[0], square[1] + offset[1]))
             return False
-
     return safe
 
   #is_valid_move function
@@ -648,3 +649,11 @@ class Board:
   def material_diff(self):
     material = self.material()
     return material[0] - material[1]
+
+  def num_pieces(self):
+    count = 0
+    for rank in range(8):
+      for file in range(8):
+        if self.find_square((rank, file)) != None:
+          count += 1
+    return count
