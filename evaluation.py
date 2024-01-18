@@ -68,13 +68,13 @@ class eval():
     # uses these factors to determine a number that represents if the game is in blacks favor or whites favor
     # find best_move function
     def play_best_move(self, depth):
-        self.board.dont_render = True
+        self.board.render = False
         best_move = self.find_best_move(depth)
         if len(best_move) == 3:
             self.board.move(best_move[0], best_move[1])
         else:
             self.board.move(best_move[0], best_move[1], best_move[3])
-        self.board.dont_render = False
+        self.board.render = True
 
     def find_best_move(self, depth):
         alpha = -float("inf")

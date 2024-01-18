@@ -73,7 +73,7 @@ class Board:
     #set time control
     #set board
     self.board = []
-    self.dont_render = False
+    self.render = True
     self.find_square = lambda pos: self.board[pos[0]][pos[1]]
     self.turn = turn
     lines = position.split("/")
