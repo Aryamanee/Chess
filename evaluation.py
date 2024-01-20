@@ -141,9 +141,9 @@ class eval:
         self.board.render = False
         best_move = self.find_best_move(depth)
         if len(best_move) == 3:
-            self.board.move(best_move[0], best_move[1])
+            self.board.move(best_move[0], best_move[1], realmove=False)
         else:
-            self.board.move(best_move[0], best_move[1], best_move[3])
+            self.board.move(best_move[0], best_move[1], best_move[3], realmove=False)
         self.board.render = True
 
     def find_best_move(self, depth):
@@ -167,9 +167,9 @@ class eval:
             valid_moves_side.sort(key=lambda x: x[2], reverse=True)
             for move in valid_moves_side:
                 if len(move) == 3:
-                    self.board.move(move[0], move[1])
+                    self.board.move(move[0], move[1], realmove=False)
                 else:
-                    self.board.move(move[0], move[1], promo=move[3])
+                    self.board.move(move[0], move[1], promo=move[3], realmove=False)
                 evaluation = self.minimax(depth - 1, not side, alpha, beta)
                 if evaluation <= minimum_evaluation:
                     minimum_evaluation = evaluation
@@ -186,9 +186,9 @@ class eval:
             valid_moves_side.sort(key=lambda x: x[2], reverse=True)
             for move in valid_moves_side:
                 if len(move) == 3:
-                    self.board.move(move[0], move[1])
+                    self.board.move(move[0], move[1], realmove=False)
                 else:
-                    self.board.move(move[0], move[1], promo=move[3])
+                    self.board.move(move[0], move[1], promo=move[3], realmove=False)
                 evaluation = self.minimax(depth - 1, not side, alpha, beta)
                 if evaluation >= maximum_evaluation:
                     maximum_evaluation = evaluation
@@ -227,9 +227,9 @@ class eval:
             valid_moves_side.sort(key=lambda x: x[2], reverse=True)
             for move in valid_moves_side:
                 if len(move) == 3:
-                    self.board.move(move[0], move[1])
+                    self.board.move(move[0], move[1], realmove=False)
                 else:
-                    self.board.move(move[0], move[1], promo=move[3])
+                    self.board.move(move[0], move[1], promo=move[3], realmove=False)
                 evaluation = self.minimax(depth - 1, not side, alpha, beta)
                 minimum_evaluation = min(evaluation, minimum_evaluation)
                 beta = min(beta, evaluation)
@@ -242,9 +242,9 @@ class eval:
             valid_moves_side.sort(key=lambda x: x[2], reverse=True)
             for move in valid_moves_side:
                 if len(move) == 3:
-                    self.board.move(move[0], move[1])
+                    self.board.move(move[0], move[1], realmove=False)
                 else:
-                    self.board.move(move[0], move[1], promo=move[3])
+                    self.board.move(move[0], move[1], promo=move[3], realmove=False)
                 evaluation = self.minimax(depth - 1, not side, alpha, beta)
                 maximum_evaluation = max(evaluation, maximum_evaluation)
                 alpha = max(alpha, evaluation)

@@ -294,11 +294,11 @@ def game(
                     if mousesquare[0] < 4 and not game_over:
                         gameboard.unmove()
                         gameboard.unmove()
-        draw_everything(
-            screen, gameboard, time_control, time_b, time_w, font, squares, status
-        )
 
         if gameboard.render:
+            draw_everything(
+                screen, gameboard, time_control, time_b, time_w, font, squares, status
+            )
             pygame.display.update()
         clock.tick(60)
 

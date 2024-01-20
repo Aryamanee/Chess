@@ -403,7 +403,7 @@ class Board:
                 if line.count(None) < len(line):
                     return False
                 # checks if the king would be safe after move
-                self.move(currsquare, endsquare)
+                self.move(currsquare, endsquare, realmove=False)
                 safe = self.king_safe(self.find_king(color), color)
                 self.unmove()
                 return safe
@@ -429,7 +429,7 @@ class Board:
                 == 1
             ):
                 # checks if the king would be safe after move
-                self.move(currsquare, endsquare)
+                self.move(currsquare, endsquare, realmove=False)
                 safe = self.king_safe(self.find_king(color), color)
                 self.unmove()
                 return safe
@@ -505,7 +505,7 @@ class Board:
                     return False
 
                 # checks if the king would be safe after move
-                self.move(currsquare, endsquare)
+                self.move(currsquare, endsquare, realmove=False)
                 safe = self.king_safe(self.find_king(color), color)
                 self.unmove()
                 return safe
@@ -623,7 +623,7 @@ class Board:
                     return False
 
                 # checks if the king would be safe after move
-                self.move(currsquare, endsquare)
+                self.move(currsquare, endsquare, realmove=False)
                 safe = self.king_safe(self.find_king(color), color)
                 self.unmove()
                 return safe
@@ -650,7 +650,7 @@ class Board:
                     == 1
                 ):
                     # checks if the king would be safe after move
-                    self.move(currsquare, endsquare)
+                    self.move(currsquare, endsquare, realmove=False)
                     safe = self.king_safe(self.find_king(color), color)
                     self.unmove()
                     return safe
@@ -699,7 +699,7 @@ class Board:
                     == 1
                 ):
                     # checks if the king would be safe after move
-                    self.move(currsquare, endsquare)
+                    self.move(currsquare, endsquare, realmove=False)
                     safe = self.king_safe(self.find_king(color), color)
                     self.unmove()
                     return safe
@@ -749,7 +749,7 @@ class Board:
                     and self.board[endsquare[0]][endsquare[1]] == None
                 ):
                     # checks if the king would be safe after move
-                    self.move(currsquare, endsquare)
+                    self.move(currsquare, endsquare, realmove=False)
                     safe = self.king_safe(self.find_king(color), color)
                     self.unmove()
                     return safe
@@ -761,7 +761,7 @@ class Board:
                     and self.board[endsquare[0]][endsquare[1]] == None
                 ):
                     # checks if the king would be safe after move
-                    self.move(currsquare, endsquare)
+                    self.move(currsquare, endsquare, realmove=False)
                     safe = self.king_safe(self.find_king(color), color)
                     self.unmove()
                     return safe
@@ -772,7 +772,7 @@ class Board:
                     if self.board[endsquare[0]][endsquare[1]] != None:
                         if self.board[endsquare[0]][endsquare[1]].color != color:
                             # checks if the king would be safe after move
-                            self.move(currsquare, endsquare)
+                            self.move(currsquare, endsquare, realmove=False)
                             safe = self.king_safe(self.find_king(color), color)
                             self.unmove()
                             return safe
@@ -787,7 +787,7 @@ class Board:
                             == endsquare[1]
                         ):
                             # checks if the king would be safe after move
-                            self.move(currsquare, endsquare)
+                            self.move(currsquare, endsquare, realmove=False)
                             safe = self.king_safe(self.find_king(color), color)
                             self.unmove()
                             return safe
@@ -804,7 +804,7 @@ class Board:
                     and self.board[endsquare[0]][endsquare[1]] == None
                 ):
                     # checks if the king would be safe after move
-                    self.move(currsquare, endsquare)
+                    self.move(currsquare, endsquare, realmove=False)
                     safe = self.king_safe(self.find_king(color), color)
                     self.unmove()
                     return safe
@@ -816,7 +816,7 @@ class Board:
                     and self.board[endsquare[0]][endsquare[1]] == None
                 ):
                     # checks if the king would be safe after move
-                    self.move(currsquare, endsquare)
+                    self.move(currsquare, endsquare, realmove=False)
                     safe = self.king_safe(self.find_king(color), color)
                     self.unmove()
                     return safe
@@ -827,7 +827,7 @@ class Board:
                     if self.board[endsquare[0]][endsquare[1]] != None:
                         if self.board[endsquare[0]][endsquare[1]].color != color:
                             # checks if the king would be safe after move
-                            self.move(currsquare, endsquare)
+                            self.move(currsquare, endsquare, realmove=False)
                             safe = self.king_safe(self.find_king(color), color)
                             self.unmove()
                             return safe
@@ -842,7 +842,7 @@ class Board:
                             == endsquare[1]
                         ):
                             # checks if the king would be safe after move
-                            self.move(currsquare, endsquare)
+                            self.move(currsquare, endsquare, realmove=False)
                             safe = self.king_safe(self.find_king(color), color)
                             self.unmove()
                             return safe
@@ -858,7 +858,7 @@ class Board:
         # for castles - has the king or the rook in question moved and is there anything blocking the path(king_safe(square) function)
 
     # move function
-    def move(self, currsquare, endsquare, promo="P"):
+    def move(self, currsquare, endsquare, promo="P", realmove=True):
         # movetype 0-normal 1-capture 2-en passant 3-promotion 4-castle
         movetype = 0
         captured_piece = captured_piece = self.find_square(endsquare)
@@ -915,13 +915,17 @@ class Board:
                     self.board[endsquare[0]][endsquare[1]].type = promo
 
         self.turn = not self.turn
-        self.history.append([currsquare, endsquare, piece, captured_piece, movetype])
-        self.board_history.append(deepcopy(self.board))
+        self.history.append(
+            [currsquare, endsquare, piece, captured_piece, movetype, realmove]
+        )
+        if realmove:
+            self.board_history.append(deepcopy(self.board))
 
     def unmove(self):
         if len(self.history) > 0 and len(self.board_history) > 0:
-            self.board_history.pop()
             move = self.history.pop()
+            if move[5]:
+                self.board_history.pop()
             self.turn = not self.turn
             if move[4] == 0 or move[4] == 3:
                 self.board[move[0][0]][move[0][1]] = move[2]
@@ -1180,7 +1184,7 @@ class Board:
                 movetype = 0
                 if self.find_square(move) != None:
                     movetype = 1
-                self.move(square, move)
+                self.move(square, move, realmove=False)
                 if not self.king_safe(self.find_king(not side), not side):
                     movetype = 2
                 self.unmove()

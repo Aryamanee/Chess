@@ -102,6 +102,13 @@ def game(
     while running:
         screen.fill((250, 247, 246))
         if gameboard.render:
+            print(
+                # gameboard.history,
+                # gameboard.board_history,
+                len(gameboard.board_history),
+                len(gameboard.history),
+                gameboard.board_history.count(gameboard.board),
+            )
             if gameboard.all_valid_moves(False) == []:
                 if gameboard.king_safe(gameboard.find_king(False), False):
                     game_over = True
@@ -119,12 +126,6 @@ def game(
             elif gameboard.board_history.count(gameboard.board) == 3:
                 game_over = True
                 status = "Threefold!"
-                print(
-                    gameboard.history,
-                    gameboard.board_history,
-                    len(gameboard.board_history),
-                    len(gameboard.history),
-                )
             elif gameboard.fifty_move():
                 game_over = True
                 status = "Fifty Move!"
