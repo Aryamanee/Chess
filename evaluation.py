@@ -1,5 +1,4 @@
 import board
-import os
 
 
 # Move Analyzer
@@ -55,25 +54,42 @@ class eval:
         phase = (
             (development_white + development_black) + 78 - pieces_white - pieces_black
         )
+        pawns_white = []
+        pawns_black = []
+        for rank in range(8):
+            for file in range(8):
+                if self.board.find_square((rank, file)) != None:
+                    if self.board.find_square((rank, file)).type == "P":
+                        if self.board.find_square((rank, file)).color:
+                            pawns_black.append((rank, file))
+                        else:
+                            pawns_white.append((rank, file))
+        pawn_to_end_white = 0
+        pawn_to_end_black = 0
+        for pawn in pawns_white:
+            pawn_to_end_white += pawn[0]
+        for pawn in pawns_black:
+            pawn_to_end_black += 7 - pawn[0]
         if phase < midgamethreshold:
-            center_control_weight = 1
             king_saftey_weight = 0.1
             square_control_weight = 0.05
             material_advantage_weight = 1
+            pawn_to_end_weight = 0.05
         elif phase < endgamethreshold:
-            center_control_weight = 1
             king_saftey_weight = 0.1
             square_control_weight = 0.05
-            material_advantage_weight = 1
+            material_advantage_weight = 1.5
+            pawn_to_end_weight = 0.05
         else:
-            center_control_weight = 1
             king_saftey_weight = 0.1
             square_control_weight = 0.05
             material_advantage_weight = 1
+            pawn_to_end_weight = 0.2
         return (
             (king_safety_white - king_safety_black) * king_saftey_weight
             + (control_white - control_black) * square_control_weight
             + (pieces_white - pieces_black) * material_advantage_weight
+            + (pawn_to_end_white - pawn_to_end_black) * pawn_to_end_weight
         )
 
     def king_safety(self, side):
@@ -200,6 +216,10 @@ class eval:
                     return float("inf")
                 else:
                     return -float("inf")
+        # elif self.board.board_history.count(self.board.board) == 3:
+        #    return 0
+        elif self.board.fifty_move():
+            return 0
         elif depth == 0:
             return self.check_position()
         if side:

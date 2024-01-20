@@ -1,4 +1,5 @@
 from piece import Piece
+from copy import deepcopy
 
 # Squares
 A1 = (7, 0)
@@ -99,6 +100,7 @@ class Board:
             line_n += 1
         # moves list
         self.history = []
+        self.board_history = [self.board]
 
     # king_safe(sqare) function
     def king_safe(self, square, color):
@@ -318,16 +320,6 @@ class Board:
                         ].type
                         == "P"
                     ):
-                        print(
-                            self.board[square[0] + offset[0]][
-                                square[1] + offset[1]
-                            ].type
-                        )
-                        print(
-                            square,
-                            offset,
-                            (square[0] + offset[0], square[1] + offset[1]),
-                        )
                         return False
         return safe
 
@@ -924,9 +916,11 @@ class Board:
 
         self.turn = not self.turn
         self.history.append([currsquare, endsquare, piece, captured_piece, movetype])
+        self.board_history.append(deepcopy(self.board))
 
     def unmove(self):
-        if len(self.history) > 0:
+        if len(self.history) > 0 and len(self.board_history) > 0:
+            self.board_history.pop()
             move = self.history.pop()
             self.turn = not self.turn
             if move[4] == 0 or move[4] == 3:
@@ -1248,3 +1242,13 @@ class Board:
                 if self.find_square((rank, file)) != None:
                     count += 1
         return count
+
+    def fifty_move(self):
+        if len(self.history) >= 100:
+            history = self.history[len(self.history) - 100 : len(self.history) - 1]
+            for move in history:
+                if move[2].type == "P" or move[3] != None:
+                    return False
+            return True
+        else:
+            return False
