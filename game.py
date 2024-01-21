@@ -1,8 +1,8 @@
 import board
 import pygame
 import datetime
-import evaluation
 import threading
+from copy import deepcopy
 
 piece_B = pygame.image.load("assets/pieces/white-bishop.png")
 piece_K = pygame.image.load("assets/pieces/white-king.png")
@@ -94,12 +94,15 @@ def game(
     font = pygame.font.Font("freesansbold.ttf", 32)
     selected = None
     squares = []
+    squares_render = []
     game_over = False
     status = "White To Play!"
     time_w = time_b = time_control[0]
     pygame.time.set_timer(0, 1000)
     while running:
         screen.fill((250, 247, 246))
+        if game_over and selected != None:
+            selected = None
         if not game_over:
             if gameboard.all_valid_moves(False) == []:
                 if gameboard.king_safe(gameboard.find_king(False), False):
@@ -133,8 +136,15 @@ def game(
                 status = "Black To Play!"
         if selected != None:
             squares = gameboard.valid_moves(selected)
+            if gameboard.turn:
+                squares_render = deepcopy(squares)
+                for square in range(len(squares_render)):
+                    squares_render[square] = flip_square(squares_render[square], True)
+            else:
+                squares_render = squares
         else:
             squares = []
+            squares_render = []
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -145,7 +155,9 @@ def game(
                     time_w -= 1
             elif event.type == pygame.MOUSEBUTTONDOWN and not game_over:
                 mousepos = pygame.mouse.get_pos()
-                mousesquare = (mousepos[1] // 75, mousepos[0] // 75)
+                mousesquare = flip_square(
+                    (mousepos[1] // 75, mousepos[0] // 75), gameboard.turn
+                )
                 if (
                     mousesquare[0] >= 0
                     and mousesquare[0] <= 7
@@ -184,7 +196,7 @@ def game(
                                         time_b,
                                         time_w,
                                         font,
-                                        squares,
+                                        squares_render,
                                         status,
                                     )
                                     pygame.display.flip()
@@ -203,7 +215,7 @@ def game(
                                         time_b,
                                         time_w,
                                         font,
-                                        squares,
+                                        squares_render,
                                         status,
                                     )
                                     pygame.display.flip()
@@ -251,7 +263,7 @@ def game(
                                             time_b,
                                             time_w,
                                             font,
-                                            squares,
+                                            squares_render,
                                             status,
                                         )
                                         pygame.display.flip()
@@ -270,7 +282,7 @@ def game(
                                             time_b,
                                             time_w,
                                             font,
-                                            squares,
+                                            squares_render,
                                             status,
                                         )
                                         pygame.display.flip()
@@ -286,6 +298,7 @@ def game(
                     ):
                         gameboard.unmove()
                         gameboard.unmove()
+                        selected = None
                     elif (
                         mousepos[0] >= 620
                         and mousepos[1] >= 400
@@ -300,7 +313,14 @@ def game(
                             game_over = True
                             status = "White Wins!"
         draw_everything(
-            screen, gameboard, time_control, time_b, time_w, font, squares, status
+            screen,
+            gameboard,
+            time_control,
+            time_b,
+            time_w,
+            font,
+            squares_render,
+            status,
         )
         pygame.display.update()
         clock.tick(60)
@@ -319,39 +339,40 @@ def play_ai_move(gameboard, eval):
 
 
 def draw_pieces(gameboard, screen):
+    board_flip = flip_board(gameboard.board, gameboard.turn)
     for rank in range(8):
         for file in range(8):
             check = False
-            if gameboard.board[rank][file] != None:
-                if gameboard.board[rank][file].color:
-                    if gameboard.board[rank][file].type == "B":
+            if board_flip[rank][file] != None:
+                if board_flip[rank][file].color:
+                    if board_flip[rank][file].type == "B":
                         piece = piece_b
-                    elif gameboard.board[rank][file].type == "K":
+                    elif board_flip[rank][file].type == "K":
                         piece = piece_k
                         check = not gameboard.king_safe(gameboard.find_king(True), True)
-                    elif gameboard.board[rank][file].type == "N":
+                    elif board_flip[rank][file].type == "N":
                         piece = piece_n
-                    elif gameboard.board[rank][file].type == "P":
+                    elif board_flip[rank][file].type == "P":
                         piece = piece_p
-                    elif gameboard.board[rank][file].type == "Q":
+                    elif board_flip[rank][file].type == "Q":
                         piece = piece_q
-                    elif gameboard.board[rank][file].type == "R":
+                    elif board_flip[rank][file].type == "R":
                         piece = piece_r
                 else:
-                    if gameboard.board[rank][file].type == "B":
+                    if board_flip[rank][file].type == "B":
                         piece = piece_B
-                    elif gameboard.board[rank][file].type == "K":
+                    elif board_flip[rank][file].type == "K":
                         piece = piece_K
                         check = not gameboard.king_safe(
                             gameboard.find_king(False), False
                         )
-                    elif gameboard.board[rank][file].type == "N":
+                    elif board_flip[rank][file].type == "N":
                         piece = piece_N
-                    elif gameboard.board[rank][file].type == "P":
+                    elif board_flip[rank][file].type == "P":
                         piece = piece_P
-                    elif gameboard.board[rank][file].type == "Q":
+                    elif board_flip[rank][file].type == "Q":
                         piece = piece_Q
-                    elif gameboard.board[rank][file].type == "R":
+                    elif board_flip[rank][file].type == "R":
                         piece = piece_R
                 if check:
                     pygame.draw.rect(
@@ -362,9 +383,20 @@ def draw_pieces(gameboard, screen):
 
 def flip_square(square: tuple, flip: bool):
     if flip:
-        return (8 - square[0], 8 - square)
+        return (7 - square[0], 7 - square[1])
     else:
         return square
+
+
+def flip_board(Board: list, flip: bool):
+    if flip:
+        Board = deepcopy(Board)
+        Board.reverse()
+        for rank in Board:
+            rank.reverse()
+        return Board
+    else:
+        return Board
 
 
 def draw_board(screen):
@@ -383,7 +415,8 @@ def draw_board(screen):
 
 def draw_valid_moves(gameboard, screen, squares):
     for square in squares:
-        if gameboard.board[square[0]][square[1]] == None:
+        Board = flip_board(gameboard.board, gameboard.turn)
+        if Board[square[0]][square[1]] == None:
             pygame.draw.rect(
                 screen,
                 (0, 255, 0),
@@ -398,8 +431,12 @@ def draw_valid_moves(gameboard, screen, squares):
             )
 
 
-def draw_sidebar(screen, time_control, time_b, time_w, font):
+def draw_sidebar(screen, time_control, time_b, time_w, font, turn):
     # draw sidebar
+    if turn:
+        placeholder = time_w
+        time_w = time_b
+        time_b = placeholder
     if not time_control == (-1, -1):
         white_clock = font.render(
             str(datetime.timedelta(seconds=time_w)),
@@ -430,12 +467,18 @@ def draw_sidebar(screen, time_control, time_b, time_w, font):
 
 def draw_previous_move(gameboard, screen):
     if len(gameboard.history) > 0:
+        prev_move_start = flip_square(
+            gameboard.history[len(gameboard.history) - 1][0], gameboard.turn
+        )
+        prev_move_end = flip_square(
+            gameboard.history[len(gameboard.history) - 1][1], gameboard.turn
+        )
         pygame.draw.rect(
             screen,
             (255, 0, 255),
             (
-                gameboard.history[len(gameboard.history) - 1][0][1] * 75,
-                gameboard.history[len(gameboard.history) - 1][0][0] * 75,
+                prev_move_start[1] * 75,
+                prev_move_start[0] * 75,
                 75,
                 75,
             ),
@@ -444,8 +487,8 @@ def draw_previous_move(gameboard, screen):
             screen,
             (255, 0, 255),
             (
-                gameboard.history[len(gameboard.history) - 1][1][1] * 75,
-                gameboard.history[len(gameboard.history) - 1][1][0] * 75,
+                prev_move_end[1] * 75,
+                prev_move_end[0] * 75,
                 75,
                 75,
             ),
@@ -481,9 +524,9 @@ def draw_everything(
     draw_previous_move(gameboard, screen)
     draw_valid_moves(gameboard, screen, squares)
     draw_pieces(gameboard, screen)
-    draw_sidebar(screen, time_control, time_b, time_w, font)
+    draw_sidebar(screen, time_control, time_b, time_w, font, gameboard.turn)
     draw_status(screen, status)
     draw_buttons(screen)
 
 
-main()
+main(time_control=(600, 2))

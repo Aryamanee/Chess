@@ -93,6 +93,8 @@ def game(
     pygame.time.set_timer(0, 1000)
     while running:
         screen.fill((250, 247, 246))
+        if game_over and selected != None:
+            squares = []
         if gameboard.render and not game_over:
             if gameboard.all_valid_moves(False) == []:
                 if gameboard.king_safe(gameboard.find_king(False), False):
@@ -100,14 +102,14 @@ def game(
                     status = "Stalemate!"
                 else:
                     game_over = True
-                    status = "Black Wins!"
+                    status = "AI Wins!"
             elif gameboard.all_valid_moves(True) == []:
                 if gameboard.king_safe(gameboard.find_king(True), True):
                     game_over = True
                     status = "Stalemate!"
                 else:
                     game_over = True
-                    status = "White Wins!"
+                    status = "Human Wins!"
             elif gameboard.board_history.count(gameboard.board) == 3:
                 game_over = True
                 status = "Threefold!"
@@ -210,6 +212,7 @@ def game(
                     ):
                         gameboard.unmove()
                         gameboard.unmove()
+                        selected = None
                     elif (
                         mousepos[0] >= 620
                         and mousepos[1] >= 400
@@ -219,7 +222,7 @@ def game(
                     ):
                         if not gameboard.turn:
                             game_over = True
-                            status = "Black Wins!"
+                            status = "AI Wins!"
 
         if gameboard.render:
             draw_everything(screen, gameboard, font, squares, status)
