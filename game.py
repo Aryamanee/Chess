@@ -360,6 +360,13 @@ def draw_pieces(gameboard, screen):
                 screen.blit(piece, (75 * file, 75 * rank))
 
 
+def flip_square(square: tuple, flip: bool):
+    if flip:
+        return (8 - square[0], 8 - square)
+    else:
+        return square
+
+
 def draw_board(screen):
     for i in range(8):
         for j in range(8):
