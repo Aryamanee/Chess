@@ -100,7 +100,7 @@ class Board:
             line_n += 1
         # moves list
         self.history = []
-        self.board_history = [self.board]
+        self.board_history = [deepcopy(self.board)]
 
     # king_safe(sqare) function
     def king_safe(self, square, color):

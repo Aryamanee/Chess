@@ -90,7 +90,6 @@ def game(
     position="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
 ):
     gameboard = board.Board(turn=turn, position=position)
-    eval = evaluation.eval(gameboard)
     running = True
     font = pygame.font.Font("freesansbold.ttf", 32)
     selected = None
@@ -101,14 +100,7 @@ def game(
     pygame.time.set_timer(0, 1000)
     while running:
         screen.fill((250, 247, 246))
-        if gameboard.render:
-            print(
-                # gameboard.history,
-                # gameboard.board_history,
-                len(gameboard.board_history),
-                len(gameboard.history),
-                gameboard.board_history.count(gameboard.board),
-            )
+        if not game_over:
             if gameboard.all_valid_moves(False) == []:
                 if gameboard.king_safe(gameboard.find_king(False), False):
                     game_over = True
@@ -129,23 +121,29 @@ def game(
             elif gameboard.fifty_move():
                 game_over = True
                 status = "Fifty Move!"
+            elif time_w == 0:
+                game_over = True
+                status = "Black Wins!"
+            elif time_b == 0:
+                game_over = True
+                status = "White Wins!"
             elif not gameboard.turn:
                 status = "White To Play!"
             else:
                 status = "Black To Play!"
-            if selected != None:
-                squares = gameboard.valid_moves(selected)
-            else:
-                squares = []
+        if selected != None:
+            squares = gameboard.valid_moves(selected)
+        else:
+            squares = []
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == 0 and time_control != (-1, -1):
+            elif event.type == 0 and time_control != (-1, -1) and not game_over:
                 if gameboard.turn:
                     time_b -= 1
                 else:
                     time_w -= 1
-            elif event.type == pygame.MOUSEBUTTONDOWN and gameboard.render:
+            elif event.type == pygame.MOUSEBUTTONDOWN and not game_over:
                 mousepos = pygame.mouse.get_pos()
                 mousesquare = (mousepos[1] // 75, mousepos[0] // 75)
                 if (
@@ -279,15 +277,32 @@ def game(
                                 selected = None
 
                 else:
-                    if mousesquare[0] < 4 and not game_over:
+                    if (
+                        mousepos[0] >= 620
+                        and mousepos[1] >= 350
+                        and mousepos[0] <= 780
+                        and mousepos[1] <= 380
+                        and not game_over
+                    ):
                         gameboard.unmove()
                         gameboard.unmove()
+                    elif (
+                        mousepos[0] >= 620
+                        and mousepos[1] >= 400
+                        and mousepos[0] <= 780
+                        and mousepos[1] <= 430
+                        and not game_over
+                    ):
+                        if not gameboard.turn:
+                            game_over = True
+                            status = "Black Wins!"
+                        else:
+                            game_over = True
+                            status = "White Wins!"
         draw_everything(
             screen, gameboard, time_control, time_b, time_w, font, squares, status
         )
-
-        if gameboard.render:
-            pygame.display.update()
+        pygame.display.update()
         clock.tick(60)
 
 
@@ -438,6 +453,20 @@ def draw_status(screen, status):
     screen.blit(message_box, message_rect)
 
 
+def draw_buttons(screen):
+    font = pygame.font.Font("freesansbold.ttf", 22)
+    pygame.draw.rect(screen, (0, 0, 0), (620, 350, 160, 30), width=3)
+    pygame.draw.rect(screen, (0, 0, 0), (620, 400, 160, 30), width=3)
+    takeback = font.render("Takeback", True, (0, 0, 0))
+    resign = font.render("Resign", True, (0, 0, 0))
+    takeback_rect = takeback.get_rect()
+    resign_rect = resign.get_rect()
+    takeback_rect.center = (700, 365)
+    resign_rect.center = (700, 415)
+    screen.blit(takeback, takeback_rect)
+    screen.blit(resign, resign_rect)
+
+
 def draw_everything(
     screen, gameboard, time_control, time_b, time_w, font, squares, status
 ):
@@ -447,6 +476,7 @@ def draw_everything(
     draw_pieces(gameboard, screen)
     draw_sidebar(screen, time_control, time_b, time_w, font)
     draw_status(screen, status)
+    draw_buttons(screen)
 
 
 main()
