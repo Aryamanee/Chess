@@ -527,6 +527,3 @@ def draw_everything(
     draw_sidebar(screen, time_control, time_b, time_w, font, gameboard.turn)
     draw_status(screen, status)
     draw_buttons(screen)
-
-
-main(time_control=(600, 2))

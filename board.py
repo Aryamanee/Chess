@@ -1,7 +1,7 @@
 from piece import Piece
 from copy import deepcopy
 
-# Squares
+# Set Square Tuples
 A1 = (7, 0)
 A2 = (6, 0)
 A3 = (5, 0)
@@ -74,13 +74,17 @@ class Board:
     def __init__(
         self, position="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", turn=False
     ):
-        # set time control
         # set board
         self.board = []
+        # set if the board should be rendered
         self.render = True
+        # find square function
         self.find_square = lambda pos: self.board[pos[0]][pos[1]]
+        # set the turn
         self.turn = turn
+        # set the lines of fen string
         lines = position.split("/")
+        # parse fen string and put it into board form
         line_n = 0
         for line in lines:
             self.board.append([])
@@ -100,6 +104,7 @@ class Board:
             line_n += 1
         # moves list
         self.history = []
+        # set the board history for threefold repetiton
         self.board_history = [deepcopy(self.board)]
 
     # king_safe(sqare) function
@@ -654,6 +659,7 @@ class Board:
                     safe = self.king_safe(self.find_king(color), color)
                     self.unmove()
                     return safe
+                # castling on black side
                 elif (
                     endsquare == G8
                     and currsquare == E8
@@ -662,6 +668,7 @@ class Board:
                 ):
                     if self.board[0][7] != None:
                         return (
+                            # checks all castle rules
                             self.king_safe(E8, color)
                             and self.king_safe(F8, color)
                             and self.king_safe(G8, color)
@@ -670,6 +677,7 @@ class Board:
                             and self.board[0][7].type == "R"
                             and self.board[0][7].color == color
                         )
+                # black king long castle
                 elif (
                     endsquare == C8
                     and currsquare == E8
@@ -679,6 +687,7 @@ class Board:
                 ):
                     if self.board[0][0] != None:
                         return (
+                            # checks castling rules
                             self.king_safe(E8, color)
                             and self.king_safe(D8, color)
                             and self.king_safe(C8, color)
@@ -703,13 +712,15 @@ class Board:
                     safe = self.king_safe(self.find_king(color), color)
                     self.unmove()
                     return safe
+                # white king short castle
                 elif (
                     endsquare == G1
                     and currsquare == E1
                     and self.board[7][6] == None
                     and self.board[7][5] == None
                 ):
-                    if self.board[7][7]:
+                    # checks all conditions for castling
+                    if self.board[7][7] != None:
                         return (
                             self.king_safe(E1, color)
                             and self.king_safe(F1, color)
@@ -719,6 +730,7 @@ class Board:
                             and self.board[7][7].type == "R"
                             and self.board[7][7].color == color
                         )
+                # white king long castle
                 elif (
                     endsquare == C1
                     and currsquare == E1
@@ -726,7 +738,8 @@ class Board:
                     and self.board[7][2] == None
                     and self.board[7][1] == None
                 ):
-                    if self.board[7][0]:
+                    # checks all conditions for castling
+                    if self.board[7][0] != None:
                         return (
                             self.king_safe(E1, color)
                             and self.king_safe(D1, color)
@@ -852,10 +865,6 @@ class Board:
                         return False
                 else:
                     return False
-
-        # else is king in check after move(king_safe(square) function)
-        # is a same color col in the way?
-        # for castles - has the king or the rook in question moved and is there anything blocking the path(king_safe(square) function)
 
     # move function
     def move(self, currsquare, endsquare, promo="P", realmove=True):
