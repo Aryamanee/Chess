@@ -258,6 +258,8 @@ class eval:
                     return -float("inf")
         elif self.board.fifty_move():
             return 0
+        elif self.board.insufficient_material():
+            return 0
         # returns static evaluation on 0 depth reached
         elif depth == 0:
             return self.check_position()

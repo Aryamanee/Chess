@@ -151,6 +151,9 @@ def game(
             elif gameboard.fifty_move():
                 game_over = True
                 status = "Fifty Move!"
+            elif gameboard.insufficient_material():
+                game_over = True
+                status = "Insufficient\nMaterial!"
             # runs if its whites turn
             elif not gameboard.turn:
                 status = "White To Play!"

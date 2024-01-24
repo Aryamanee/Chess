@@ -124,6 +124,9 @@ def game(
             elif gameboard.fifty_move():
                 game_over = True
                 status = "Fifty Move!"
+            elif gameboard.insufficient_material():
+                game_over = True
+                status = "Insufficient\nMaterial!"
             elif time_w == 0:
                 game_over = True
                 status = "Black Wins!"

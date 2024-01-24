@@ -1265,3 +1265,32 @@ class Board:
             return True
         else:
             return False
+
+    def insufficient_material(self):
+        pawns = False
+        rooks = False
+        queens = False
+        for rank in range(8):
+            for file in range(8):
+                if self.find_square((rank, file)) != None:
+                    if self.find_square((rank, file)).type == "P":
+                        pawns = True
+                    elif self.find_square((rank, file)).type == "R":
+                        rooks = True
+                    elif self.find_square((rank, file)).type == "Q":
+                        queens = True
+        if pawns or rooks or queens:
+            return False
+        else:
+            bn_white = 0
+            bn_black = 0
+            for rank in range(8):
+                for file in range(8):
+                    piece = self.find_square((rank, file))
+                    if piece != None:
+                        if piece.type == "N" or piece.type == "B":
+                            if piece.color:
+                                bn_black += 1
+                            else:
+                                bn_white += 1
+            return not bn_white > 1 or bn_black > 1
