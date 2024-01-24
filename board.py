@@ -870,7 +870,9 @@ class Board:
     def move(self, currsquare, endsquare, promo="P", realmove=True):
         # movetype 0-normal 1-capture 2-en passant 3-promotion 4-castle
         movetype = 0
+        # set captured piece
         captured_piece = captured_piece = self.find_square(endsquare)
+        # set to capture if endsquare is not empty
         if self.board[endsquare[0]][endsquare[1]] != None:
             movetype = 1
         color = self.find_square(currsquare).color
@@ -878,6 +880,7 @@ class Board:
             self.board[currsquare[0]][currsquare[1]].type,
             self.board[currsquare[0]][currsquare[1]].color,
         )
+        # castling
         if piece.type == "K":
             if abs(currsquare[1] - endsquare[1]) == 2:
                 movetype = 4
@@ -895,7 +898,7 @@ class Board:
                     elif endsquare == C1:
                         self.board[D1[0]][D1[1]] = self.find_square(A1)
                         self.board[A1[0]][A1[1]] = None
-
+        # en passant
         if (
             abs(endsquare[1] - currsquare[1]) == 1
             and self.board[endsquare[0]][endsquare[1]] == None
@@ -912,6 +915,7 @@ class Board:
         self.board[endsquare[0]][endsquare[1]] = self.board[currsquare[0]][
             currsquare[1]
         ]
+        # promotion
         self.board[currsquare[0]][currsquare[1]] = None
         if piece.type == "P":
             if color:
@@ -923,25 +927,35 @@ class Board:
                     movetype = 3
                     self.board[endsquare[0]][endsquare[1]].type = promo
 
+        # switch turn
         self.turn = not self.turn
+        # add to history
         self.history.append(
             [currsquare, endsquare, piece, captured_piece, movetype, realmove]
         )
+        # append deepcopy of board for threefold check if this move hasnt come from ai
         if realmove:
             self.board_history.append(deepcopy(self.board))
 
+    # unmove function - undoes previous move
     def unmove(self):
         if len(self.history) > 0 and len(self.board_history) > 0:
+            # get the move and remove from history
             move = self.history.pop()
+            # remove the move from board history if it was recorded
             if move[5]:
                 self.board_history.pop()
+            # undo turn
             self.turn = not self.turn
+            # normal or promotion
             if move[4] == 0 or move[4] == 3:
                 self.board[move[0][0]][move[0][1]] = move[2]
                 self.board[move[1][0]][move[1][1]] = move[3]
+            # capture
             elif move[4] == 1:
                 self.board[move[0][0]][move[0][1]] = move[2]
                 self.board[move[1][0]][move[1][1]] = move[3]
+            # en passant
             elif move[4] == 2:
                 self.board[move[0][0]][move[0][1]] = move[2]
                 self.board[move[1][0]][move[1][1]] = None
@@ -949,6 +963,7 @@ class Board:
                     self.board[move[1][0] - 1][move[1][1]] = move[3]
                 else:
                     self.board[move[1][0] + 1][move[1][1]] = move[3]
+            # castle
             elif move[4] == 4:
                 self.board[move[0][0]][move[0][1]] = move[2]
                 self.board[move[1][0]][move[1][1]] = None
@@ -967,6 +982,7 @@ class Board:
 
     # find_king function
     def find_king(self, color):
+        #search for king
         for rank in range(len(self.board)):
             for square in range(len(self.board[rank])):
                 if self.board[rank][square] != None:
@@ -975,13 +991,14 @@ class Board:
                         and self.board[rank][square].type == "K"
                     ):
                         return (rank, square)
-
+    #check if the king of specified side has moved in the history
     def king_moved(self, color):
         for move in self.history:
             if move[2].type == "K" and move[2].color == color:
                 return True
         return False
-
+    
+    #check if the rook of specified side has moved in the history of its starting square
     def rook_moved(self, color, square):
         for move in self.history:
             if (
@@ -995,9 +1012,13 @@ class Board:
     # valid_moves(square)
     # returns all valid moves for piece on that square
     def valid_moves(self, square):
+        #set moves list to empty
         moves = []
+        #runs if there is something on the square to move from, otherwise no moves will be added to the list and an empty list will be returned
         if self.board[square[0]][square[1]] != None:
+            #kings
             if self.board[square[0]][square[1]].type == "K":
+                #checks all of the possible moves for a king and returns each one that is true
                 king_offsets = [
                     (0, 1),
                     (0, -1),
@@ -1015,6 +1036,7 @@ class Board:
                     if self.is_valid_move(square, newsquare):
                         moves.append(newsquare)
             elif self.board[square[0]][square[1]].type == "Q":
+                #checks all of the possible moves for a queen and returns each one that is true
                 queen_offsets = [
                     (1, 0),
                     (2, 0),
@@ -1080,6 +1102,7 @@ class Board:
                     if self.is_valid_move(square, newsquare):
                         moves.append(newsquare)
             elif self.board[square[0]][square[1]].type == "R":
+                #checks all of the possible moves for a rook and returns each one that is true
                 rook_offsets = [
                     (1, 0),
                     (2, 0),
@@ -1115,6 +1138,7 @@ class Board:
                     if self.is_valid_move(square, newsquare):
                         moves.append(newsquare)
             elif self.board[square[0]][square[1]].type == "B":
+                #checks all of the possible moves for a bishop and returns each one that is true
                 bishop_offsets = [
                     (7, -7),
                     (6, -6),
@@ -1152,6 +1176,7 @@ class Board:
                     if self.is_valid_move(square, newsquare):
                         moves.append(newsquare)
             elif self.board[square[0]][square[1]].type == "N":
+                #checks all of the possible moves for a knight and returns each one that is true
                 knight_offsets = [
                     (1, 2),
                     (2, 1),
@@ -1167,6 +1192,7 @@ class Board:
                     if self.is_valid_move(square, newsquare):
                         moves.append(newsquare)
             elif self.board[square[0]][square[1]].type == "P":
+                #checks all of the possible moves for a pawn and returns each one that is true
                 if self.board[square[0]][square[1]].color:
                     pawn_offsets = [(1, 0), (2, 0), (1, 1), (1, -1)]
                 else:
@@ -1180,23 +1206,31 @@ class Board:
     # all_valid_moves(side)
     # returns all valid moves for all pieces for the side provided
     def all_valid_moves(self, side):
+        #squares are all the squares that the specified side has a piece
         squares = []
+        #moves are all the squares that the piece can end up along with the square it started at
         moves = []
+        #look for pieces of specified side
         for rank in range(8):
             for file in range(8):
                 if self.board[rank][file] != None:
                     if self.board[rank][file].color == side:
                         squares.append((rank, file))
+        #check the valid moves for each square
         for square in squares:
             move_piece = self.valid_moves(square)
             for move in move_piece:
+                #movetypes for move ordering to make a better chance of effective ab pruning
                 movetype = 0
+                #check if its a capture
                 if self.find_square(move) != None:
                     movetype = 1
+                #check if its a check
                 self.move(square, move, realmove=False)
                 if not self.king_safe(self.find_king(not side), not side):
                     movetype = 2
                 self.unmove()
+                #if its promotion add the possible pieces to promote to
                 if (
                     self.board[square[0]][square[1]].type == "P"
                     and square[0] == 6
@@ -1215,8 +1249,10 @@ class Board:
                         moves.append((square, move, movetype, promo))
                 else:
                     moves.append((square, move, movetype))
+        #return the moves
         return moves
 
+    #return a tuple consiting of the total material points of white and then the total for black.
     def material(self):
         mw = mb = 0
         for rank in range(8):
@@ -1243,11 +1279,12 @@ class Board:
                         elif type == "P":
                             mw += 1
         return (mw, mb)
-
+    #return the material difference between white and black - 0 for equal, >0 for white has more and <0 for white has less
     def material_diff(self):
         material = self.material()
         return material[0] - material[1]
 
+    #count the ammount of pieces on the board
     def num_pieces(self):
         count = 0
         for rank in range(8):
@@ -1256,6 +1293,7 @@ class Board:
                     count += 1
         return count
 
+    #return if its a fifty move draw - 100 total moves have been played with no pawns or captures
     def fifty_move(self):
         if len(self.history) >= 100:
             history = self.history[len(self.history) - 100 : len(self.history) - 1]
@@ -1266,6 +1304,7 @@ class Board:
         else:
             return False
 
+    #find if its an insufficient material draw - not enough material on the board to end in checkmate no matter what
     def insufficient_material(self):
         pawns = False
         rooks = False

@@ -1,9 +1,11 @@
+# import the required libraries
 import board
 import pygame
 import datetime
 import threading
 from copy import deepcopy
 
+# load the piece textures
 piece_B = pygame.image.load("assets/pieces/white-bishop.png")
 piece_K = pygame.image.load("assets/pieces/white-king.png")
 piece_N = pygame.image.load("assets/pieces/white-knight.png")
@@ -18,23 +20,30 @@ piece_q = pygame.image.load("assets/pieces/black-queen.png")
 piece_r = pygame.image.load("assets/pieces/black-rook.png")
 
 
+# main function - ran by the gui
 def main(turn=False, time_control=(-1, -1)):
+    # initialize pygame, screen and clock. Then start game function
     pygame.init()
     screen = pygame.display.set_mode((800, 600))
     clock = pygame.time.Clock()
     game(screen, clock, turn, time_control)
 
 
+# promote function
 def promote(side, time_control, time_w, time_b, screen, clock):
     while True:
+        # event loop
         for event in pygame.event.get():
+            # quit on exit, None is interpreted by game function to quit
             if event.type == pygame.QUIT:
                 return None, time_w, time_b
+            # take time away from the side who is playing as deciding promotion counts to the clock
             elif event.type == 0 and time_control != (-1, -1):
                 if side:
                     time_b -= 1
                 else:
                     time_w -= 1
+            # mouse press, detect which button was pressed(queen, rook, knight bishop and return result)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mousepos = pygame.mouse.get_pos()
                 if (
@@ -65,23 +74,26 @@ def promote(side, time_control, time_w, time_b, screen, clock):
                     and mousepos[1] < 337.5
                 ):
                     return "N", time_w, time_b
-
+        # fill the background
         screen.fill((112, 102, 119))
+        # draw black pieces
         if side:
             screen.blit(piece_q, (300, 262.5))
             screen.blit(piece_r, (375, 262.5))
             screen.blit(piece_b, (450, 262.5))
             screen.blit(piece_n, (525, 262.5))
+        # draw white pieces
         else:
             screen.blit(piece_Q, (300, 262.5))
             screen.blit(piece_R, (375, 262.5))
             screen.blit(piece_B, (450, 262.5))
             screen.blit(piece_N, (525, 262.5))
-
+        # show results and cap fps at 60
         pygame.display.flip()
         clock.tick(60)
 
 
+# game function
 def game(
     screen,
     clock,
@@ -89,21 +101,30 @@ def game(
     time_control=(-1, -1),
     position="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
 ):
+    # initialize board, font
     gameboard = board.Board(turn=turn, position=position)
     running = True
     font = pygame.font.Font("freesansbold.ttf", 32)
+    # set selected squares, valid move squares and the squares to render(flipped for black) to empty
     selected = None
     squares = []
     squares_render = []
     game_over = False
+    # status is white to play and set the clock for white and black
     status = "White To Play!"
     time_w = time_b = time_control[0]
+    # set timer for clock at 1 second
     pygame.time.set_timer(0, 1000)
+    # running loop
     while running:
+        # fill background
         screen.fill((250, 247, 246))
+        # unselect selected square once game is over in order to remove green highlighting after game
         if game_over and selected != None:
             selected = None
+        # check if the game is over if its not over
         if not game_over:
+            # check for stalemate and checkmate on whites side
             if gameboard.all_valid_moves(False) == []:
                 if gameboard.king_safe(gameboard.find_king(False), False):
                     game_over = True
@@ -111,6 +132,7 @@ def game(
                 else:
                     game_over = True
                     status = "Black Wins!"
+            # check for stalemate and checkmate on blacks side
             elif gameboard.all_valid_moves(True) == []:
                 if gameboard.king_safe(gameboard.find_king(True), True):
                     game_over = True
@@ -118,58 +140,78 @@ def game(
                 else:
                     game_over = True
                     status = "White Wins!"
+            # check for threefold
             elif gameboard.board_history.count(gameboard.board) == 3:
                 game_over = True
                 status = "Threefold!"
+            # check for fifty move draw
             elif gameboard.fifty_move():
                 game_over = True
                 status = "Fifty Move!"
+            # check for insufficient material draw
             elif gameboard.insufficient_material():
                 game_over = True
                 status = "Insufficient\nMaterial!"
+            # check if white or black ran out of time
             elif time_w == 0:
                 game_over = True
                 status = "Black Wins!"
             elif time_b == 0:
                 game_over = True
                 status = "White Wins!"
+            # if no one one or lost set status to reflect the current turn
             elif not gameboard.turn:
                 status = "White To Play!"
             else:
                 status = "Black To Play!"
+        # if a square is currently selected to move
         if selected != None:
+            # set the valid moves
             squares = gameboard.valid_moves(selected)
+            # if its blacks turn set the squares to render to the flip of what they actually are
             if gameboard.turn:
-                squares_render = deepcopy(squares)
+                squares_render = squares.copy()
                 for square in range(len(squares_render)):
                     squares_render[square] = flip_square(squares_render[square], True)
             else:
                 squares_render = squares
         else:
+            # if no piece is selected clear the squares and sqaures for rendering
             squares = []
             squares_render = []
+        # event loop
         for event in pygame.event.get():
+            # quit on quit
             if event.type == pygame.QUIT:
                 running = False
+            # subtract from time
             elif event.type == 0 and time_control != (-1, -1) and not game_over:
                 if gameboard.turn:
                     time_b -= 1
                 else:
                     time_w -= 1
+            # mouse press
             elif event.type == pygame.MOUSEBUTTONDOWN and not game_over:
+                # get position
                 mousepos = pygame.mouse.get_pos()
+                # set the mouse square to the opposite of what it is if its blacks turn
                 mousesquare = flip_square(
                     (mousepos[1] // 75, mousepos[0] // 75), gameboard.turn
                 )
+                # if the mouse was clicked inside of the board
                 if (
                     mousesquare[0] >= 0
                     and mousesquare[0] <= 7
                     and mousesquare[1] >= 0
                     and mousesquare[1] <= 7
                 ):
+                    # if there is nothing on the selected square
                     if gameboard.board[mousesquare[0]][mousesquare[1]] == None:
+                        # if some piece has previously been selected to move
                         if selected != None:
+                            # is the move valid?
                             if squares.count(mousesquare) == 1:
+                                # promotion
                                 if gameboard.board[selected[0]][
                                     selected[1]
                                 ].type == "P" and (
@@ -183,58 +225,50 @@ def game(
                                         screen,
                                         clock,
                                     )
+                                    # exit on None as that indicates an exit from the promote function
                                     if promo == None:
                                         running = False
+                                    # add the increment to the side that just played
                                     if time_control != (-1, -1):
                                         if gameboard.turn:
                                             time_b += time_control[1]
                                         else:
                                             time_w += time_control[1]
+                                    # make move
                                     gameboard.move(selected, mousesquare, promo=promo)
-                                    selected, squares = None, []
-                                    draw_everything(
-                                        screen,
-                                        gameboard,
-                                        time_control,
-                                        time_b,
-                                        time_w,
-                                        font,
-                                        squares_render,
-                                        status,
-                                    )
-                                    pygame.display.flip()
+                                    # unselect squares
+                                    selected, squares, squares_render = None, [], []
+                                # not promotion
                                 else:
+                                    # add increment and move
                                     if time_control != (-1, -1):
                                         if gameboard.turn:
                                             time_b += time_control[1]
                                         else:
                                             time_w += time_control[1]
                                     gameboard.move(selected, mousesquare)
-                                    selected, squares = None, []
-                                    draw_everything(
-                                        screen,
-                                        gameboard,
-                                        time_control,
-                                        time_b,
-                                        time_w,
-                                        font,
-                                        squares_render,
-                                        status,
-                                    )
-                                    pygame.display.flip()
+                                    # unselect squares
+                                    selected, squares, squares_render = None, [], []
                             selected = None
+                    # captures or selecting a piece
                     else:
+                        # if selecting or unselecting a piece
                         if (
                             gameboard.board[mousesquare[0]][mousesquare[1]].color
                             == gameboard.turn
                         ):
+                            # if the selected piece is pressed, unset it
                             if mousesquare == selected:
                                 selected = None
+                            # if another piece is selected, select it instead
                             else:
                                 selected = mousesquare
+                        # if capture
                         else:
                             if selected != None:
+                                # is it valid?
                                 if squares.count(mousesquare) == 1:
+                                    # promotion
                                     if gameboard.board[selected[0]][
                                         selected[1]
                                     ].type == "P" and (
@@ -248,50 +282,36 @@ def game(
                                             screen,
                                             clock,
                                         )
+                                        # exit on none as thats how promo function transfers exit
                                         if promo == None:
                                             running = False
+                                        # add increment
                                         if time_control != (-1, -1):
                                             if gameboard.turn:
                                                 time_b += time_control[1]
                                             else:
                                                 time_w += time_control[1]
+                                        # move
                                         gameboard.move(
                                             selected, mousesquare, promo=promo
                                         )
-                                        selected, squares = None, []
-                                        draw_everything(
-                                            screen,
-                                            gameboard,
-                                            time_control,
-                                            time_b,
-                                            time_w,
-                                            font,
-                                            squares_render,
-                                            status,
-                                        )
-                                        pygame.display.flip()
+                                        # unselect all
+                                        selected, squares, squares_render = None, [], []
+                                    # normal capture
                                     else:
+                                        # add increment
                                         if time_control != (-1, -1):
                                             if gameboard.turn:
                                                 time_b += time_control[1]
                                             else:
                                                 time_w += time_control[1]
+                                        # move and unselect all
                                         gameboard.move(selected, mousesquare)
-                                        selected, squares = None, []
-                                        draw_everything(
-                                            screen,
-                                            gameboard,
-                                            time_control,
-                                            time_b,
-                                            time_w,
-                                            font,
-                                            squares_render,
-                                            status,
-                                        )
-                                        pygame.display.flip()
+                                        selected, squares, squares_render = None, [], []
                                 selected = None
-
+                # mouse not pressed on board
                 else:
+                    # takeback button
                     if (
                         mousepos[0] >= 620
                         and mousepos[1] >= 350
@@ -302,6 +322,7 @@ def game(
                         gameboard.unmove()
                         gameboard.unmove()
                         selected = None
+                    # resign button
                     elif (
                         mousepos[0] >= 620
                         and mousepos[1] >= 400
@@ -315,6 +336,7 @@ def game(
                         else:
                             game_over = True
                             status = "White Wins!"
+        # draw frame
         draw_everything(
             screen,
             gameboard,
@@ -325,24 +347,16 @@ def game(
             squares_render,
             status,
         )
+        # display frame and cap fps at 60
         pygame.display.update()
         clock.tick(60)
 
 
-def play_ai_move(gameboard, eval):
-    if gameboard.turn:
-        if gameboard.num_pieces() > 12:
-            threading.Thread(target=eval.play_best_move, args=[2]).start()
-        elif gameboard.num_pieces() > 8:
-            threading.Thread(target=eval.play_best_move, args=[3]).start()
-        elif gameboard.num_pieces() > 4:
-            threading.Thread(target=eval.play_best_move, args=[4]).start()
-        else:
-            threading.Thread(target=eval.play_best_move, args=[5]).start()
-
-
+# draw the pieces on the board
 def draw_pieces(gameboard, screen):
+    # flip the board if its blacks turn
     board_flip = flip_board(gameboard.board, gameboard.turn)
+    # go through board drawing pieces
     for rank in range(8):
         for file in range(8):
             check = False
@@ -352,6 +366,7 @@ def draw_pieces(gameboard, screen):
                         piece = piece_b
                     elif board_flip[rank][file].type == "K":
                         piece = piece_k
+                        # check highlighter
                         check = not gameboard.king_safe(gameboard.find_king(True), True)
                     elif board_flip[rank][file].type == "N":
                         piece = piece_n
@@ -366,6 +381,7 @@ def draw_pieces(gameboard, screen):
                         piece = piece_B
                     elif board_flip[rank][file].type == "K":
                         piece = piece_K
+                        # check highlighter
                         check = not gameboard.king_safe(
                             gameboard.find_king(False), False
                         )
@@ -377,21 +393,27 @@ def draw_pieces(gameboard, screen):
                         piece = piece_Q
                     elif board_flip[rank][file].type == "R":
                         piece = piece_R
+                # draw check highlighter
                 if check:
                     pygame.draw.rect(
                         screen, (255, 0, 0), (75 * file, 75 * rank, 75, 75)
                     )
+                # place piece
                 screen.blit(piece, (75 * file, 75 * rank))
 
 
+# flip a square
 def flip_square(square: tuple, flip: bool):
+    # flip it if the flip is True otherwise just return the square
     if flip:
         return (7 - square[0], 7 - square[1])
     else:
         return square
 
 
+# flip the board
 def flip_board(Board: list, flip: bool):
+    # return flipped board if flip is True otherwise just return the normal board
     if flip:
         Board = deepcopy(Board)
         Board.reverse()
@@ -402,30 +424,39 @@ def flip_board(Board: list, flip: bool):
         return Board
 
 
+# draw the board squares
 def draw_board(screen):
     for i in range(8):
         for j in range(8):
             if i % 2 == 0 and j % 2 == 0:
+                # white squares
                 color = (204, 183, 174)
             elif i % 2 == 0 and j % 2 != 0:
+                # black squares
                 color = (112, 102, 119)
             elif i % 2 != 0 and j % 2 == 0:
+                # black squares
                 color = (112, 102, 119)
             else:
+                # white squares
                 color = (204, 183, 174)
+            # draw square
             pygame.draw.rect(screen, color, (75 * i, 75 * j, 75, 75))
 
 
+# draw the valid move highlighters
 def draw_valid_moves(gameboard, screen, squares):
     for square in squares:
         Board = flip_board(gameboard.board, gameboard.turn)
         if Board[square[0]][square[1]] == None:
+            # dotted indicator for non captures
             pygame.draw.rect(
                 screen,
                 (0, 255, 0),
                 (square[1] * 75 + 25, square[0] * 75 + 25, 25, 25),
             )
         else:
+            # outline for captures
             pygame.draw.rect(
                 screen,
                 (0, 255, 0),
@@ -434,12 +465,14 @@ def draw_valid_moves(gameboard, screen, squares):
             )
 
 
+# draw the sidebar
 def draw_sidebar(screen, time_control, time_b, time_w, font, turn):
-    # draw sidebar
+    # flip the timers if its blacks turn
     if turn:
         placeholder = time_w
         time_w = time_b
         time_b = placeholder
+    # if there is a time control, render the times
     if not time_control == (-1, -1):
         white_clock = font.render(
             str(datetime.timedelta(seconds=time_w)),
@@ -457,18 +490,11 @@ def draw_sidebar(screen, time_control, time_b, time_w, font, turn):
         black_clock_rect.center = (700, 100)
         screen.blit(white_clock, white_clock_rect)
         screen.blit(black_clock, black_clock_rect)
-    else:
-        white_clock = font.render("NO CLOCK", True, (0, 0, 0))
-        black_clock = font.render("NO CLOCK", True, (0, 0, 0))
-        white_clock_rect = white_clock.get_rect()
-        black_clock_rect = black_clock.get_rect()
-        white_clock_rect.center = (700, 500)
-        black_clock_rect.center = (700, 100)
-        screen.blit(white_clock, white_clock_rect)
-        screen.blit(black_clock, black_clock_rect)
 
 
+# draw the previous move highlighter
 def draw_previous_move(gameboard, screen):
+    # only if there is a previous move, draw purple indicators on the start and end squares of the previous move
     if len(gameboard.history) > 0:
         prev_move_start = flip_square(
             gameboard.history[len(gameboard.history) - 1][0], gameboard.turn
@@ -498,6 +524,7 @@ def draw_previous_move(gameboard, screen):
         )
 
 
+# draw the game status
 def draw_status(screen, status):
     font = pygame.font.Font("freesansbold.ttf", 25)
     message_box = font.render(status, True, (0, 0, 0))
@@ -506,6 +533,7 @@ def draw_status(screen, status):
     screen.blit(message_box, message_rect)
 
 
+# draw the resign and takeback buttons
 def draw_buttons(screen):
     font = pygame.font.Font("freesansbold.ttf", 22)
     pygame.draw.rect(screen, (0, 0, 0), (620, 350, 160, 30), width=3)
@@ -520,6 +548,7 @@ def draw_buttons(screen):
     screen.blit(resign, resign_rect)
 
 
+# call all draw functions
 def draw_everything(
     screen, gameboard, time_control, time_b, time_w, font, squares, status
 ):

@@ -151,6 +151,7 @@ def game(
             elif gameboard.fifty_move():
                 game_over = True
                 status = "Fifty Move!"
+            # insufficient material draw
             elif gameboard.insufficient_material():
                 game_over = True
                 status = "Insufficient\nMaterial!"
