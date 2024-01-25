@@ -1,3 +1,8 @@
+# Aryaman Sawhney
+# evaluation.py
+# a function that evaluates statically and minimax to sort through options  - this is the base of the ai
+
+# import the board
 import board
 
 

@@ -1,3 +1,8 @@
+# Aryaman Sawhney
+# game_ai.py
+# game that plays the human as white and the ai as black
+
+
 # import the libraries
 import board
 import pygame

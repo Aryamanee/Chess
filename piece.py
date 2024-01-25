@@ -1,3 +1,8 @@
+# Aryaman Sawhney
+# piece.py
+# a class that holds the details of a piece
+
+
 # PIECE CLASS
 class Piece:
     def __init__(self, type, color, has_moved=False):

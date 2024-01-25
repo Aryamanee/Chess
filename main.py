@@ -1,3 +1,8 @@
+# Aryaman Sawhney
+# main.py
+# gui that opens the game
+# not a credit but abdullah is cool ngl - easter egg
+
 # import libraries
 import tkinter
 import game

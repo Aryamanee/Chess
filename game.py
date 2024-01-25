@@ -1,3 +1,7 @@
+# Aryaman Sawhney
+# game.py
+# gui that holds a singleplayer game
+
 # import the required libraries
 import board
 import pygame
