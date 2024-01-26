@@ -6,7 +6,6 @@
 import board
 import pygame
 import datetime
-import threading
 from copy import deepcopy
 
 # load the piece textures
